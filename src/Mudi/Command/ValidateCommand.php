@@ -76,8 +76,8 @@ class ValidateCommand extends BaseValidateCommand
 						list(,$warnings) = $result;
 						//@todo "abort status", "recursion"
 
-						$self->resource->results[$this->currentResource][$this->getName()] = array(
-							'url'   		=> $this->currentResource,
+						$self->resource->results[$self->currentResource][$self->getName()] = array(
+							'url'   		=> $self->currentResource,
 							'response_body' => json_decode($body, true),
 							'status' 		=> $status,
 							'errors' 		=> $errors,
