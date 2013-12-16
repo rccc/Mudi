@@ -53,13 +53,12 @@ class ValidateCommand extends BaseValidateCommand
 				->setSimultaneousLimit(10)
 				->setOptions($options)
 				->post('http://validator.w3.org/check')
-				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) use($this) {
+				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl)  {
         			
 					$responseErrors = $request->getResponseError();
 
 					if(empty($responseErrors))
 					{
-	        			echo "Fetch complete for (" . $this->currentResource . ")" . PHP_EOL;
 
 	        			$infos = $request->getResponseInfo();
 	        			$header_size = $infos['header_size'];
