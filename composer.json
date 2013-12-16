@@ -1,0 +1,15 @@
+{
+    "require": {
+        "silex/silex": "~1.1",
+        "cilex/console-service-provider": "1.0.*@dev",
+        "chuyskywalker/rolling-curl": "dev-master",
+        "symfony/filesystem": "2.5.*@dev",
+        "neutron/silex-filesystem-provider": "dev-master"
+    },
+    "autoload" : {
+	    "psr-0" : {
+		    "Mudi\\" : "src/",
+        "Mudi\\Command\\":"src/Command/"
+      }
+   }
+}
