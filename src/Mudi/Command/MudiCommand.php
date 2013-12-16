@@ -48,12 +48,12 @@ abstract class MudiCommand extends Console\Command\Command
             {
                 case 'htm':
                 case 'html':
-                    $this->resource->isHtml = true;
-                    break;
+                $this->resource->isHtml = true;
+                break;
                 case 'zip':
-                    $this->resource->isArchive = true;
-                    $this->resource->isZip = true;
-                    break;
+                $this->resource->isArchive = true;
+                $this->resource->isZip = true;
+                break;
             }
 
         }
@@ -77,15 +77,15 @@ abstract class MudiCommand extends Console\Command\Command
         if (is_dir($tmp)) 
         { 
             $zip = new \ZipArchive();
-                if ($zip->open($resource->path) === TRUE) {
-                    $zip->extractTo($tmp);
-                    $zip->close();
-                } 
-                else {
+            if ($zip->open($resource->path) === TRUE) {
+                $zip->extractTo($tmp);
+                $zip->close();
+            } 
+            else {
                     //@todo log
-                }
+            }
         }
-      
+        
         return $tmp;
     }
 

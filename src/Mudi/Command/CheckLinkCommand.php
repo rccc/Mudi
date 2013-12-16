@@ -11,103 +11,102 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckLinkCommand extends MudiCommand
 {
-		protected $curl;
-		protected $currentHref 		= null;
-		protected $linkList 		= array();
-		protected $completedList 	= array();
+	protected $curl;
+	protected $currentHref 		= null;
+	protected $linkList 		= array();
+	protected $completedList 	= array();
 
-		protected function configure()
+	protected function configure()
+	{
+		$this
+		->setName('check-link')
+		->setDescription('Vérifie la validité des liens contenus dans une page')
+		->addArgument(
+			'name',
+			InputArgument::OPTIONAL,
+			"nom du fichier, du dossier ou de l'archive à analyser"
+			);
+	}
+
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		$name = $input->getArgument('name');
+
+		$this->checkResource($name);
+
+		if($this->resource->isHtml)
 		{
-			$this
-				->setName('check-link')
-				->setDescription('Vérifie la validité des liens contenus dans une page')
-				->addArgument(
-						'name',
-						InputArgument::OPTIONAL,
-						"nom du fichier, du dossier ou de l'archive à analyser"
-				);
+			$this->getLinkList($this->resource->path);
 		}
-
-		protected function execute(InputInterface $input, OutputInterface $output)
+		elseif($this->resource->isDir)
 		{
-			$name = $input->getArgument('name');
-
-			$this->checkResource($name);
-
-			if($this->resource->isHtml)
-			{
-				$this->getLinkList($this->resource->path);
-			}
-			elseif($this->resource->isDir)
-			{
-				$this->getDeepLinkList($this->resource->path);
-			}
-			elseif($this->resource->isArchive && $this->resource->isZip)
-			{
-				$tmp = $this->createTmpDir($this->resource);
-				$this->getDeepLinkList($tmp);
-				$this->removeTmpDir($tmp);
-			}
-			$this->validate();
-			$this->consoleOuptut($output);
-
-//			var_dump($this->resource->results);
+			$this->getDeepLinkList($this->resource->path);
 		}
-
-		protected function getLinkList($path)
+		elseif($this->resource->isArchive && $this->resource->isZip)
 		{
+			$tmp = $this->createTmpDir($this->resource);
+			$this->getDeepLinkList($tmp);
+			$this->removeTmpDir($tmp);
+		}
+		$this->validate();
+		$this->consoleOuptut($output);
 
-			libxml_use_internal_errors(true);
+	}
 
-			$doc = new \DOMDocument();
+	protected function getLinkList($path)
+	{
 
-			if(!$doc->loadHTMLFile($path))
+		libxml_use_internal_errors(true);
+
+		$doc = new \DOMDocument();
+
+		if(!$doc->loadHTMLFile($path))
+		{
+			foreach (libxml_get_errors() as $error) {
+				var_dump('libxml_error', $error);
+			}
+
+			libxml_clear_errors();
+		}
+		else
+		{
+			$linkList = $doc->getElementsByTagName('a');
+			if($linkList->length == 0)
 			{
-			    foreach (libxml_get_errors() as $error) {
-			    	var_dump('libxml_error', $error);
-			    }
-
-			    libxml_clear_errors();
+				var_dump("Aucune balise trouvée dans le document !");
 			}
 			else
 			{
-				$linkList = $doc->getElementsByTagName('a');
-				if($linkList->length == 0)
+				foreach($linkList as $node)
 				{
-					var_dump("Aucune balise trouvée dans le document !");
-				}
-				else
-				{
-					foreach($linkList as $node)
+
+					$href = $node->getAttribute('href');
+					if(empty($href)){
+						var_dump('La valeur de l\'attribut "href" est vide');
+						$this->resource->results[$this->currentResource][$this->getName()][] = false;
+					}
+					else
 					{
+						$link = new \Mudi\Link();
 
-						$href = $node->getAttribute('href');
-						if(empty($href)){
-							var_dump('La valeur de l\'attribut "href" est vide');
-							$this->resource->results[$this->currentResource][$this->getName()][] = false;
-						}
-						else
+						if(false !== strpos($href, 'http') )
 						{
-							$link = new \Mudi\Link();
-
-							if(false !== strpos($href, 'http') )
-							{
-								$link->isRemote = true;
-								$link->url   = $href;
-							}else 
-							{
-								$link->isRemote = false;
-								//on prends le "resource->path" ( var/www/leaflet/index.html )
-								//on substitue la référence au fichier par la valeur de l'attribut
-								$chunks = explode('/', $this->resource->path);
-								array_pop($chunks);
-								$chunks[] = substr($href,1);
-								$link->url = implode('/', $chunks);							
-							}
-
-							$this->currentResource = $path;							
-							$this->resource->results[$this->currentResource][$this->getName()][] = $link;
+							$link->isRemote = true;
+							$link->url   = $href;
+						}else 
+						{
+							$link->isRemote = false;
+							//on prends le "resource->path" ( var/www/leaflet/index.html )
+							//on substitue la référence au fichier par la valeur de l'attribut
+							$chunks = explode('/', $this->resource->path);
+							array_pop($chunks);
+							$chunks[] = substr($href,1);
+							$link->url = implode('/', $chunks);							
 						}
+
+						$this->currentResource = $path;							
+						$this->resource->results[$this->currentResource][$this->getName()][] = $link;
+					}
 
 					}//foreach
 
@@ -129,10 +128,9 @@ class CheckLinkCommand extends MudiCommand
 			
 			foreach ($filtered as $index => $file) 
 			{
-					var_dump('file', $file[0]);
-					$this->getLinkList($file[0]);	
+				$this->getLinkList($file[0]);	
 					//max file @todo -> config
-					if($index > 20) break;
+				if($index > 20) break;
 			}
 
 		}
@@ -141,7 +139,7 @@ class CheckLinkCommand extends MudiCommand
 		{
 			if(!empty($this->currentResource) && !empty($this->resource->results[$this->currentResource]))
 			{
-	
+
 				$ref = &$this->resource->results[$this->currentResource][$this->getName()];
 
 				foreach($ref as $index => $link)
@@ -174,14 +172,14 @@ class CheckLinkCommand extends MudiCommand
 					CURLOPT_FAILONERROR => true,
 					CURLOPT_NOBODY => true,
 					CURLOPT_RETURNTRANSFER => true
-				);
+					);
 
 				$this->curl = new \RollingCurl\RollingCurl();
 				
 				$this->curl
-					->setSimultaneousLimit(10)
-					->setOptions($curl_options)
-					->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
+				->setSimultaneousLimit(10)
+				->setOptions($curl_options)
+				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
 
 						$error = $request->getResponseError(); //todo : message correspondant au code http ? 
 						$infos = $request->getResponseInfo();
@@ -238,4 +236,4 @@ class CheckLinkCommand extends MudiCommand
 			}
 
 		}
-}
+	}

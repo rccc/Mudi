@@ -61,7 +61,8 @@ class ValidateCommand extends BaseValidateCommand
 					{
 	        			echo "Fetch complete for (" . $this->currentResource . ")" . PHP_EOL;
 
-	        			$header_size = $request->getResponseInfo()['header_size'];
+	        			$infos = $request->getResponseInfo();
+	        			$header_size = $infos['header_size'];
 						$header 	 = substr($request->getResponseText(), 0, $header_size);
 						$body 		 = substr($request->getResponseText(), $header_size);
 				
