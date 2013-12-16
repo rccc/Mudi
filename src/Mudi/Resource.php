@@ -4,15 +4,15 @@ namespace Mudi;
 
 class Resource
 {
-	public $isFile 		= false;
-	public $isHtml      = false;
-	public $isDir 		= false;
-	public $isArchive 	= false;
-	public $isZip 		= false;
+	public $isFile		= false;
+	public $isHtml		= false;
+	public $isDir		= false;
+	public $isArchive	= false;
+	public $isZip		= false;
 	public $ext			= "";
-	public $results     = array();
-	public $name        = "";
-	public $path  		= "";
+	public $results		= array();
+	public $name 		= "";
+	public $path 		= "";
 
 
 	public function getPathFromName($name)

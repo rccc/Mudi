@@ -7,11 +7,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $app = new Application;
 
-// Omitted Silex route definitions
-
-//$app->register(new Silex\Provider\ServiceControllerServiceProvider());
-
-
 // Console Service Provider and command-line commands
 $app->register(new ConsoleServiceProvider(), array(
     'console.name' => 'Mudi console',
@@ -28,6 +23,7 @@ $commands = array(
 foreach ($commands as $command) {
     $app['console']->add($command);
 }
+
 
 if (PHP_SAPI !== 'cli') {
   $app->run();

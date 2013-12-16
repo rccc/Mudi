@@ -22,18 +22,6 @@ class tagStatsCommand extends MudiCommand
 						InputArgument::OPTIONAL,
 						"nom du fichier, du dossier ou de l'archive à analyser"
 				)
-				->addOption(
-					 'yell',
-					 null,
-					 InputOption::VALUE_NONE,
-					 'Si défini, la réponse est rendue en majuscules'
-				)
-				->addOption(
-					 'file',
-					 null,
-					 InputOption::VALUE_NONE,
-					 'Si défini, valide un fichier html'
-				)
 			;
 		}
 
