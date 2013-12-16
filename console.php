@@ -7,12 +7,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $app = new Application;
 
-// Console Service Provider and command-line commands
+//console as service
 $app->register(new ConsoleServiceProvider(), array(
     'console.name' => 'Mudi console',
     'console.version' => '0.1.0',
 ));
-
 
 $commands = array(
     new \Mudi\Command\ValidateCommand(),

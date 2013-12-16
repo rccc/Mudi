@@ -39,7 +39,7 @@ abstract class MudiCommand extends Console\Command\Command
             $this->resource->isFile = true;
             $this->resource->ext = $ext;
 
-            if(!in_array($ext, array('htm', 'html', 'zip')))
+            if(!in_array($ext, $this->resource->authorizedExtensions))
             {
                 throw new Exception('Le type de fichier est invalide');    
             }

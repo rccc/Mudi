@@ -13,6 +13,7 @@ class Resource
 	public $results		= array();
 	public $name 		= "";
 	public $path 		= "";
+	public $authorizedExtensions = array("htm","html", "zip");
 
 
 	public function getPathFromName($name)
