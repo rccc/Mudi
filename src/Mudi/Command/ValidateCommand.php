@@ -38,6 +38,7 @@ class ValidateCommand extends BaseValidateCommand
 		protected function validate($resource) 
 		{
 
+			$self = $this;
 			$this->currentResource = $resource;
 
 			$header_size = 0;
@@ -53,13 +54,14 @@ class ValidateCommand extends BaseValidateCommand
 				->setSimultaneousLimit(10)
 				->setOptions($options)
 				->post('http://validator.w3.org/check')
-				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl)  {
+				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) use($self) {
         			
 					$responseErrors = $request->getResponseError();
 
+
 					if(empty($responseErrors))
 					{
-	        			echo "Fetch complete for (" . $this->currentResource . ")" . PHP_EOL;
+	        			echo "Fetch complete for (" . $self->currentResource . ")" . PHP_EOL;
 
 	        			$infos = $request->getResponseInfo();
 	        			$header_size = $infos['header_size'];
@@ -74,7 +76,7 @@ class ValidateCommand extends BaseValidateCommand
 						list(,$warnings) = $result;
 						//@todo "abort status", "recursion"
 
-						$this->resource->results[$this->currentResource][$this->getName()] = array(
+						$self->resource->results[$this->currentResource][$this->getName()] = array(
 							'url'   		=> $this->currentResource,
 							'response_body' => json_decode($body, true),
 							'status' 		=> $status,
@@ -90,7 +92,7 @@ class ValidateCommand extends BaseValidateCommand
 					}
 
     			})
-    			->execute(array('this', $this))
+    			->execute()
     		;
 
 		}
