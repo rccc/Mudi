@@ -53,7 +53,7 @@ class ValidateCommand extends BaseValidateCommand
 				->setSimultaneousLimit(10)
 				->setOptions($options)
 				->post('http://validator.w3.org/check')
-				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) {
+				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) use($this) {
         			
 					$responseErrors = $request->getResponseError();
 
