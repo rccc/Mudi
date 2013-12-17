@@ -51,6 +51,7 @@ abstract class BaseValidateCommand extends MudiCommand
                                 //@todo log
                             }
                     }
+                    
                     $this->deepValidate($tmp);
                     $this->removeTmpDir($tmp);
 

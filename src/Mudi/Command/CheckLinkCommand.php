@@ -57,6 +57,17 @@ class CheckLinkCommand extends MudiCommand
 		elseif($this->resource->isArchive && $this->resource->isZip)
 		{
 			$tmp = $this->createTmpDir($this->resource);
+	        if (is_dir($tmp)) 
+            { 
+                $zip = new \ZipArchive();
+                    if ($zip->open($this->resource->path) === TRUE) {
+                        $zip->extractTo($tmp);
+                        $zip->close();
+                    } 
+                    else {
+                        //@todo log
+                    }
+            }
 			$this->getDeepLinkList($tmp);
 			$this->removeTmpDir($tmp);
 		}

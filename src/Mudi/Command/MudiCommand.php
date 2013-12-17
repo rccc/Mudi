@@ -35,8 +35,9 @@ abstract class MudiCommand extends Console\Command\Command
         if(is_file($this->resource->path))
         {
 
-            $ext = end(explode('.', $name));
             $this->resource->isFile = true;
+
+            $ext = end(explode('.', $name));
             $this->resource->ext = $ext;
 
             if(!in_array($ext, $this->resource->authorizedExtensions))
@@ -74,17 +75,6 @@ abstract class MudiCommand extends Console\Command\Command
         $tmp = tempnam(sys_get_temp_dir(), $resource->ext);
         if ($fs->exists($tmp)) $fs->remove($tmp); 
         $fs->mkdir($tmp);
-        if (is_dir($tmp)) 
-        { 
-            $zip = new \ZipArchive();
-            if ($zip->open($resource->path) === TRUE) {
-                $zip->extractTo($tmp);
-                $zip->close();
-            } 
-            else {
-                    //@todo log
-            }
-        }
         
         return $tmp;
     }
