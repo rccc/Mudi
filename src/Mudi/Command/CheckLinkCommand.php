@@ -42,7 +42,7 @@ class CheckLinkCommand extends MudiCommand
 	{
 		$name = $input->getArgument('name');
 
-        $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
+		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
 		$this->checkResource($name);
 
@@ -84,7 +84,7 @@ class CheckLinkCommand extends MudiCommand
 		if(!$doc->loadHTMLFile($path))
 		{
 			foreach (libxml_get_errors() as $error) {
-				$this->DOMDocumentError[] = sprintd('libxml error : %', $error); 
+				$this->DOMDocumentError[$path][] = sprintf('libxml error : %', $error); 
 			}
 
 			libxml_clear_errors();
@@ -94,7 +94,7 @@ class CheckLinkCommand extends MudiCommand
 			$linkList = $doc->getElementsByTagName('a');
 			if($linkList->length == 0)
 			{
-				$this->DOMDocumentError[] = sprintf("%s : Aucune balise trouvée dans le document !", $path);
+				$this->DOMDocumentError[$path][] = "Aucune balise trouvée dans le document !";
 			}
 			else
 			{
@@ -104,7 +104,7 @@ class CheckLinkCommand extends MudiCommand
 					$href = $node->getAttribute('href');
 					//empty href attribute ?
 					if(empty($href)){
-						$this->DOMDocumentError[] = 'un lien dont la valeur de l\'attribut "href" est vide a été trouvé dans le document';
+						$this->DOMDocumentError[$path][] = 'un lien dont la valeur de l\'attribut "href" est vide a été trouvé dans le document';
 					}
 					//empty anchor target ?
 					elseif(false !== strpos($href, '#'))
@@ -113,14 +113,14 @@ class CheckLinkCommand extends MudiCommand
 						$node = $doc->getElementById($id);
 						if(is_null($node))
 						{
-							$this->DOMDocumentWarning[] = sprintf("Une ancre a été détectée ( %s ) mais la cible n'a pas été trouvée dans le document", $href);
+							$this->DOMDocumentWarning[$path][] = sprintf("Une ancre a été détectée ( %s ) mais la cible n'a pas été trouvée dans le document", $href);
 						}
 					}
 					//javascript:void(0) | onclick=my_function() ?
 					//@todo naive check : preg_match ?
 					elseif(false !== strpos($href,'(') && false === strpos($href, ')'))
 					{
-						$this->DOMDocumentWarning[] = sprintf("Une ancre semble contenir une appel à une fonction javascipt ( %s ) !", $href);						
+						$this->DOMDocumentWarning[$path][] = sprintf("Une ancre semble contenir une appel à une fonction javascipt ( %s ) !", $href);						
 					}
 					else
 					{
@@ -250,7 +250,7 @@ class CheckLinkCommand extends MudiCommand
 	protected function consoleOutput(OutputInterface $output)
 	{
 
-		if(empty($this->DOMDocumentError) )
+		if(!empty($this->resource->results) )
 		{
 			$output->writeln("Résultats pour : " . $this->currentResource);
 
@@ -267,7 +267,7 @@ class CheckLinkCommand extends MudiCommand
 			}
 
 		}
-		else
+		elseif(!empty($this->DOMDocumentError))
 		{
 			foreach ($this->DOMDocumentError as $error) {
 				$output->writeln(sprintf('<bg=red>%s</bg=red>', $error));
@@ -287,49 +287,71 @@ class CheckLinkCommand extends MudiCommand
 
 	protected function HtmlOutput(OutputInterface $output)
 	{
-	
+
 		$tmp = array();
 		$tmp[] = '<section class="command-section">';
 		$tmp[] = '<h2>Résultats vérification des liens</h2>';
+		$tmp[] = '<div class="section-body">';
 
 		if(!empty($this->DOMDocumentError))
 		{
 			$tmp[] = '<h3>erreurs</h3>';
 
-			foreach($this->DOMDocumentError as $error)
+			foreach($this->DOMDocumentError as $resourceName => $errors)
 			{
-				$tmp[] = sprintf('<p class="error">%s</p>', $error);				
+
+				$tmp[] = sprintf('<div class="resource-name">%s</div>', $resourceName);
+
+				foreach ($errors as $error) {
+					$tmp[] = sprintf('<p class="label error">%s</p>', $error);				
+				}
 			}
 		}
-		else{
-			foreach($this->resource->results as $resource => $command)
+		
+		if(!empty($this->DOMDocumentWarning))
+		{
+			$tmp[] = '<h3>Avertissements</h3>';
+			foreach($this->DOMDocumentWarning as $resourceName => $warnings)
 			{
-				foreach($command as $commandName => $results)
+				foreach($warnings as $warning)
 				{
-					foreach($results as $result)
-					{
-						if(!empty($link->error) || !$link->exists)
-						{
-							$tmp[] = sprintf('<p class="error">%s : %s</p>', $link->url, $link->error);
-						}
-						elseif($link->exists)
-						{
-							$tmp[] = sprintf('<p class="success">%s : OK</p>', $link->url);
-						}
-					}
+					$tmp[] = sprintf('<p class="label warning">%s</p>', $warning);				
 				}
 			}
 		}
 
-		if(!empty($this->DOMDocumentWarning))
+		if(!empty($this->resource->results))
 		{
-			$tmp[] = '<h3>Avertissements</h3>';
-			foreach($this->DOMDocumentWarning as $warning)
+			$tmp[] = '<h3>Lien(s) Valide(s)</h3>';
+
+			foreach($this->resource->results as $resourceName => $command)
 			{
-				$tmp[] = sprintf('<p class="warning">%s</p>', $warning);				
+
+				$tmp[] = sprintf('<div class="resource-name">%s</div>', $resourceName);
+
+				foreach($command as $commandName => $results)
+				{
+					foreach($results as $link)
+					{
+
+						$tmp[] = '<div class="result">';            
+
+						if(!empty($link->error) || !$link->exists)
+						{
+							$tmp[] = sprintf('<p class="label error">%s </p>', $link->error);
+						}
+						elseif($link->exists)
+						{
+							$tmp[] = sprintf('<p class="label success">%s : OK</p>', $link->url);
+						}
+
+						$tmp[] = '</div><!-- .result -->';
+
+					}
+				}
 			}
 		}
-
+		$tmp[] = '</div>';
 		$tmp[] = '</section>';
 		echo implode(PHP_EOL, $tmp);
 

@@ -178,40 +178,48 @@ class ValidateCommand extends BaseValidateCommand
             $tmp = array();
             $tmp[] = '<section class="command-section">';
             $tmp[] = sprintf('<h2>%s</h2>', "Résultats validation w3c");
+            $tmp[] = '<div class="section-body">';
 
-			foreach($this->resource->results as $resource)
+			foreach($this->resource->results as $resourceName => $resource)
 			{
+                
+                $tmp[] = sprintf('<div class="resource-name">%s</div>', $resourceName);
+
 				foreach($resource as  $commandName => $result)
 				{
 
-
 					if(!$result) continue;
+
+                    $tmp[] = '<div class="result">';            
 
 					if($result['status'] === "Valid")
 					{
-						$tmp[] = sprintf('<p class="success">%s : Valide</p>', $result['url']);
-						$tmp[] = sprintf('<p class="info">Encodage détécté : %s <p>', $result['response_body']['source']['encoding']);
+						$tmp[] = '<p><span class="label success">Valide</span></p>';
+						$tmp[] = sprintf('<p><span class="label info">Encodage détécté : %s </span><p>', $result['response_body']['source']['encoding']);
 
 					}
 					else
 					{
-						$tmp[] = sprintf('<p class="error">%s : Non valide</p>', $result['url']);
+						$tmp[] = '<p><span class="label error">Non valide</span></p>';
+
+                        $tmp[] = sprintf('<span class="label info">nombre erreurs : %s</span>', $result['errors']);                       
+
+                        if(!empty($result['warnings']))
+                        {
+                            $tmp[] = sprintf('<span class="label info">avertissements: %s</span>', $result['warnings']);                      
+                        }
 
 						foreach ($result['response_body']['messages'] as $value) {
-							$tmp[] = sprintf('<p class="error">%s</p>', $value['message']);						
+							$tmp[] = sprintf('<p><span class="label error">%s</span></p>', $value['message']);						
 						}
-						
-						$tmp[] = sprintf('<p class="">nombre erreurs : %s</p>', $result['errors']);						
-
-						if(!empty($result['warnings']))
-						{
-							$tmp[] = sprintf('<p class="">avertissements: %s</p>', $result['warnings']);						
-						}
-
 					}
+
+                    $tmp[] = '</div><!-- .result -->';
+
 				}
 			}
 
+            $tmp[] = '<div class="section-body">';
             $tmp[] = '</section>';
 
             echo implode(PHP_EOL, $tmp);

@@ -158,11 +158,12 @@ class tagStatsCommand extends MudiCommand
         $tmp = array();
         $tmp[] = '<section class="command-section">';
         $tmp[] = sprintf('<h2>%s</h2>', "Résultats Statistiques balises");
+		$tmp[] = '<div class="section-body">';
 
-		foreach ($this->resource->results as $resource => $commandName) 
+		foreach ($this->resource->results as $resourceName => $commandName) 
 		{
-						
-			$tmp[] = sprintf("<h3>Résultats pour : %s</h3>", $resource);
+			$tmp[] = '<div class="result">';			
+		    $tmp[] = sprintf('<div class="resource-name">%s</div>', $resourceName);
 	
 			foreach ($commandName as $result) {
 				$tmp[] = "<table>";
@@ -173,9 +174,12 @@ class tagStatsCommand extends MudiCommand
 				$tmp[] = "</table>";
 
 			}
+
+			$tmp[] = '</div><!-- .result -->';
 			
 		}
 
+		$tmp[] = '</div>';
 		$tmp[] = '</section>';
 		print implode(PHP_EOL, $tmp);
 
