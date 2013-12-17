@@ -4,7 +4,8 @@
         "cilex/console-service-provider": "1.0.*@dev",
         "chuyskywalker/rolling-curl": "dev-master",
         "symfony/filesystem": "2.5.*@dev",
-        "neutron/silex-filesystem-provider": "dev-master"
+        "symfony/process": "2.5.*@dev",
+	"twig/twig": "1.*"
     },
     "autoload" : {
 	    "psr-0" : {

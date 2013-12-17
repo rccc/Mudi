@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a2fb56fcadc08f6c07c90b216be4053c",
+    "hash": "991ed4ba9079006ab6d9dfc1125cecd2",
     "packages": [
         {
             "name": "chuyskywalker/rolling-curl",
@@ -123,50 +123,6 @@
                 "silex"
             ],
             "time": "2012-12-19 10:50:58"
-        },
-        {
-            "name": "neutron/silex-filesystem-provider",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/romainneutron/Silex-Filesystem-Service-Provider.git",
-                "reference": "45440ffe6d327a79f11b20ecdb2e3b2523da46a2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/romainneutron/Silex-Filesystem-Service-Provider/zipball/45440ffe6d327a79f11b20ecdb2e3b2523da46a2",
-                "reference": "45440ffe6d327a79f11b20ecdb2e3b2523da46a2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "silex/silex": ">=1.0",
-                "symfony/filesystem": ">=2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Neutron": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Romain Neutron",
-                    "email": "imprec@gmail.com",
-                    "homepage": "http://www.lickmychip.com/"
-                }
-            ],
-            "description": "A Silex Provider for Symfony Filesystem component",
-            "keywords": [
-                "filesystem",
-                "silex",
-                "temporary-filesystem"
-            ],
-            "time": "2013-09-17 10:37:23"
         },
         {
             "name": "pimple/pimple",
@@ -667,6 +623,53 @@
             "time": "2013-12-03 15:23:03"
         },
         {
+            "name": "symfony/process",
+            "version": "dev-master",
+            "target-dir": "Symfony/Component/Process",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Process.git",
+                "reference": "4d0f32a1b595204f5c370b46f385d11a97b8d1f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/4d0f32a1b595204f5c370b46f385d11a97b8d1f9",
+                "reference": "4d0f32a1b595204f5c370b46f385d11a97b8d1f9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Process\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
+            "homepage": "http://symfony.com",
+            "time": "2013-11-26 16:42:52"
+        },
+        {
             "name": "symfony/routing",
             "version": "v2.4.0",
             "target-dir": "Symfony/Component/Routing",
@@ -731,6 +734,55 @@
                 "url"
             ],
             "time": "2013-11-22 17:42:00"
+        },
+        {
+            "name": "twig/twig",
+            "version": "v1.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fabpot/Twig.git",
+                "reference": "85e4ff98000157ff753d934b9f13659a953f5666"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/85e4ff98000157ff753d934b9f13659a953f5666",
+                "reference": "85e4ff98000157ff753d934b9f13659a953f5666",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.15-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Twig_": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com"
+                }
+            ],
+            "description": "Twig, the flexible, fast, and secure template language for PHP",
+            "homepage": "http://twig.sensiolabs.org",
+            "keywords": [
+                "templating"
+            ],
+            "time": "2013-12-06 07:47:10"
         }
     ],
     "packages-dev": [
@@ -744,7 +796,7 @@
         "cilex/console-service-provider": 20,
         "chuyskywalker/rolling-curl": 20,
         "symfony/filesystem": 20,
-        "neutron/silex-filesystem-provider": 20
+        "symfony/process": 20
     },
     "platform": [
 

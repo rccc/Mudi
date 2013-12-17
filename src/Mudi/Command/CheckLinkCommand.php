@@ -15,6 +15,7 @@ class CheckLinkCommand extends MudiCommand
 	protected $currentHref 		= null;
 	protected $linkList 		= array();
 	protected $completedList 	= array();
+	protected $DOMDocumentError = array();
 
 	protected function configure()
 	{
@@ -25,12 +26,22 @@ class CheckLinkCommand extends MudiCommand
 			'name',
 			InputArgument::OPTIONAL,
 			"nom du fichier, du dossier ou de l'archive à analyser"
-			);
+			)
+		->addOption(
+			'output-html',
+			null,
+			InputOption::VALUE_NONE,
+			'output html'
+
+			)
+		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$name = $input->getArgument('name');
+
+        $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
 		$this->checkResource($name);
 
@@ -49,7 +60,15 @@ class CheckLinkCommand extends MudiCommand
 			$this->removeTmpDir($tmp);
 		}
 		$this->validate();
-		$this->consoleOuptut($output);
+
+		if($input->getOption('output-html'))
+		{
+			$this->HtmlOutput($output);
+		}
+		else
+		{
+			$this->consoleOutput($output);				
+		}
 
 	}
 
@@ -63,7 +82,7 @@ class CheckLinkCommand extends MudiCommand
 		if(!$doc->loadHTMLFile($path))
 		{
 			foreach (libxml_get_errors() as $error) {
-				var_dump('libxml_error', $error);
+				$this->DOMDocumentError[] = sprintd('libxml error : %', $error); 
 			}
 
 			libxml_clear_errors();
@@ -73,7 +92,7 @@ class CheckLinkCommand extends MudiCommand
 			$linkList = $doc->getElementsByTagName('a');
 			if($linkList->length == 0)
 			{
-				var_dump("Aucune balise trouvée dans le document !");
+				$this->DOMDocumentError[] = sprintf("%s : Aucune balise trouvée dans le document !", $path);
 			}
 			else
 			{
@@ -82,8 +101,7 @@ class CheckLinkCommand extends MudiCommand
 
 					$href = $node->getAttribute('href');
 					if(empty($href)){
-						var_dump('La valeur de l\'attribut "href" est vide');
-						$this->resource->results[$this->currentResource][$this->getName()][] = false;
+						$this->DOMDocumentError[] = 'un lien dont la valeur de l\'attribut "href" est vide a été trouvé dans le document';
 					}
 					else
 					{
@@ -108,132 +126,172 @@ class CheckLinkCommand extends MudiCommand
 						$this->resource->results[$this->currentResource][$this->getName()][] = $link;
 					}
 
-					}//foreach
+				}//foreach
 
-				}				
-			}
-
+			}				
 		}
 
-
-		protected function getDeepLinkList($path)
-		{
-			$dir = new \RecursiveDirectoryIterator($path);
-			$it = new \RecursiveIteratorIterator($dir);
-			
-			//max Depth @todo -> config
-			$it->setMaxDepth(2);
-
-			$filtered = new \RegexIterator($it, '/^.+\.html?$/i', \RecursiveRegexIterator::GET_MATCH);			
-			
-			foreach ($filtered as $index => $file) 
-			{
-				$this->getLinkList($file[0]);	
-					//max file @todo -> config
-				if($index > 20) break;
-			}
-
-		}
-
-		protected function validate()
-		{
-			if(!empty($this->currentResource) && !empty($this->resource->results[$this->currentResource]))
-			{
-
-				$ref = &$this->resource->results[$this->currentResource][$this->getName()];
-
-				foreach($ref as $index => $link)
-				{
-					$link->isValid = false;
-					if($link->isRemote)
-					{
-						$curl = $this->getCurl();
-						$curl->get($link->url)->execute(array('link'=>$link));	
-					}
-					else{
-						if(file_exists($link->url))
-						{
-							$link->exists = true;
-							$this->completedList[] = $link; 
-						}
-					}
-				}
-				//@see curl callback
-				$ref = $this->completedList;
-			}	
-		}
-
-		protected function getCurl()
-		{
-			if(empty($this->curl)){
-
-				$curl_options = array(
-
-					CURLOPT_FAILONERROR => true,
-					CURLOPT_NOBODY => true,
-					CURLOPT_RETURNTRANSFER => true
-					);
-
-				$this->curl = new \RollingCurl\RollingCurl();
-				
-				$this->curl
-				->setSimultaneousLimit(10)
-				->setOptions($curl_options)
-				->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
-
-						$error = $request->getResponseError(); //todo : message correspondant au code http ? 
-						$infos = $request->getResponseInfo();
-						$http_code = (int) $infos['http_code'];
-
-						$options['link']->exists = false;
-
-						if(!empty($error))
-						{
-							$options['link']->error = $error;
-							$this->completedList[] = $options['link'];
-						}
-						elseif(!($http_code >= 200 && $http_code < 400))
-						{
-							$options['link']->exists = false;
-						}
-						else
-						{
-							$options['link']->exists = true;	
-						}								
-						
-						$this->completedList[] = $options['link'];
-					})
-				;
-				
-			}
-
-			return $this->curl;
-		}
-
-		protected function consoleOuptut(OutputInterface $output)
-		{
-
-			if(!empty($this->currentResource) )
-			{
-				print PHP_EOL;
-				$output->writeln("Résultats pour : " . $this->currentResource);
-				print PHP_EOL;
-
-				foreach($this->resource->results[$this->currentResource][$this->getName()] as $link)
-				{
-					if(!empty($link->error) || !$link->exists)
-					{
-						$output->writeln(sprintf('<bg=red>%s : %s</bg=red>', $link->url, $link->error));
-					}
-					elseif($link->exists)
-					{
-						$output->writeln(sprintf('<bg=green>%s : OK</bg=green>', $link->url));
-					}
-				}
-
-				print str_repeat(PHP_EOL, 2);
-
-			}
-
-		}
 	}
+
+
+	protected function getDeepLinkList($path)
+	{
+		$dir = new \RecursiveDirectoryIterator($path);
+		$it = new \RecursiveIteratorIterator($dir);
+
+			//max Depth @todo -> config
+		$it->setMaxDepth(2);
+
+		$filtered = new \RegexIterator($it, '/^.+\.html?$/i', \RecursiveRegexIterator::GET_MATCH);			
+
+		foreach ($filtered as $index => $file) 
+		{
+			$this->getLinkList($file[0]);	
+					//max file @todo -> config
+			if($index > 20) break;
+		}
+
+	}
+
+	protected function validate()
+	{
+		if(!empty($this->currentResource) && !empty($this->resource->results[$this->currentResource]))
+		{
+
+			$ref = &$this->resource->results[$this->currentResource][$this->getName()];
+
+			foreach($ref as $index => $link)
+			{
+				$link->isValid = false;
+				if($link->isRemote)
+				{
+					$curl = $this->getCurl();
+					$curl->get($link->url)->execute(array('link'=>$link));	
+				}
+				else{
+					if(file_exists($link->url))
+					{
+						$link->exists = true;
+						$this->completedList[] = $link; 
+					}
+				}
+			}
+				//@see curl callback
+			$ref = $this->completedList;
+		}	
+	}
+
+	protected function getCurl()
+	{
+		if(empty($this->curl)){
+
+			$curl_options = array(
+
+				CURLOPT_FAILONERROR => true,
+				CURLOPT_NOBODY => true,
+				CURLOPT_RETURNTRANSFER => true
+				);
+
+			$this->curl = new \RollingCurl\RollingCurl();
+
+			$this->curl
+			->setSimultaneousLimit(10)
+			->setOptions($curl_options)
+			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
+
+					$error = $request->getResponseError(); //todo : message correspondant au code http ? 
+					$infos = $request->getResponseInfo();
+					$http_code = (int) $infos['http_code'];
+
+					$options['link']->exists = false;
+
+					if(!empty($error))
+					{
+						$options['link']->error = $error;
+						$this->completedList[] = $options['link'];
+					}
+					elseif(!($http_code >= 200 && $http_code < 400))
+					{
+						$options['link']->exists = false;
+					}
+					else
+					{
+						$options['link']->exists = true;	
+					}								
+					
+					$this->completedList[] = $options['link'];
+				})
+			;
+
+		}
+
+		return $this->curl;
+	}
+
+	protected function consoleOutput(OutputInterface $output)
+	{
+
+		if(empty($this->DOMDocumentError) )
+		{
+			$output->writeln("Résultats pour : " . $this->currentResource);
+
+			foreach($this->resource->results[$this->currentResource][$this->getName()] as $link)
+			{
+				if(!empty($link->error) || !$link->exists)
+				{
+					$output->writeln(sprintf('<bg=red>%s : %s</bg=red>', $link->url, $link->error));
+				}
+				elseif($link->exists)
+				{
+					$output->writeln(sprintf('<bg=green>%s : OK</bg=green>', $link->url));
+				}
+			}
+
+		}
+		else
+		{
+
+		}
+
+	}
+
+
+	protected function HtmlOutput(OutputInterface $output)
+	{
+	
+		$tmp = array();
+		$tmp[] = '<section class="command-section">';
+		$tmp[] = '<h2>Résultats vérification des liens</h2>';
+
+		if(!empty($this->DOMDocumentError))
+		{
+			foreach($this->DOMDocumentError as $error)
+			{
+				$tmp[] = sprintf('<p class="error">%s</p>', $error);				
+			}
+		}
+		else{
+			foreach($this->resource->results as $resource => $command)
+			{
+				foreach($command as $commandName => $results)
+				{
+					foreach($results as $result)
+					{
+						if(!empty($link->error) || !$link->exists)
+						{
+							$tmp[] = sprintf('<p class="error">%s : %s</p>', $link->url, $link->error);
+						}
+						elseif($link->exists)
+						{
+							$tmp[] = sprintf('<p class="success">%s : OK</p>', $link->url);
+						}
+					}
+				}
+			}
+		}
+		$tmp[] = '</section>';
+		echo implode(PHP_EOL, $tmp);
+	
+
+	}
+}

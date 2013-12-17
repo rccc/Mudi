@@ -22,12 +22,21 @@ class tagStatsCommand extends MudiCommand
 			InputArgument::OPTIONAL,
 			"nom du fichier, du dossier ou de l'archive à analyser"
 			)
+		->addOption(
+			'output-html',
+			null,
+			InputOption::VALUE_NONE,
+			'output html'
+
+			)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$name = $input->getArgument('name');
+
+        $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
 		$this->checkResource($name);
 
@@ -45,7 +54,15 @@ class tagStatsCommand extends MudiCommand
 			$this->removeTmpDir($tmp);
 		}
 
-		$this->consoleOutput($output);
+		
+		if($input->getOption('output-html'))
+		{
+			$this->HtmlOutput($output);
+		}
+		else
+		{
+			$this->consoleOutput($output);				
+		}
 	}
 
 	protected function getTagStats($resource) {
@@ -86,7 +103,7 @@ class tagStatsCommand extends MudiCommand
 			}
 
 			$this->resource->results[$this->currentResource][$this->getName()] = $count_list;
-			
+
 		}
 
 	}
@@ -95,12 +112,12 @@ class tagStatsCommand extends MudiCommand
 	{
 		$dir = new \RecursiveDirectoryIterator($path);
 		$it = new \RecursiveIteratorIterator($dir);
-		
+
 			//max Depth @todo -> config
 		$it->setMaxDepth(2);
 
 		$filtered = new \RegexIterator($it, '/^.+\.html?$/i', \RecursiveRegexIterator::GET_MATCH);			
-		
+
 		foreach ($filtered as $index => $file) 
 		{
 			$this->getTagStats($file[0]);	
@@ -114,12 +131,10 @@ class tagStatsCommand extends MudiCommand
 	{
 
 		foreach ($this->resource->results as $resource => $commandName) {
-			
+
 			$tmp = array();
-			
-			print PHP_EOL;
+
 			$output->writeln("Résultats pour : " . $resource);
-			print PHP_EOL;
 
 			foreach ($commandName as $result) {
 				foreach($result as $tagName => $count)
@@ -130,10 +145,39 @@ class tagStatsCommand extends MudiCommand
 				print implode(PHP_EOL, $tmp);
 
 			}
-			
+
 		}
 
 		print str_repeat(PHP_EOL, 2);
+
+	}
+
+	protected function HtmlOutput(OutputInterface $output)
+	{
+
+        $tmp = array();
+        $tmp[] = '<section class="command-section">';
+        $tmp[] = sprintf('<h2>%s</h2>', "Résultats Statistiques balises");
+
+		foreach ($this->resource->results as $resource => $commandName) 
+		{
+						
+			$tmp[] = sprintf("<h3>Résultats pour : %s</h3>", $resource);
+	
+			foreach ($commandName as $result) {
+				$tmp[] = "<table>";
+				foreach($result as $tagName => $count)
+				{
+					$tmp[] = sprintf("<tr><td>%s</td><td>%d</td></tr>", $tagName, $count);
+				}
+				$tmp[] = "</table>";
+
+			}
+			
+		}
+
+		$tmp[] = '</section>';
+		print implode(PHP_EOL, $tmp);
 
 	}
 }

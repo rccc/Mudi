@@ -23,16 +23,33 @@ class ValidateCommand extends BaseValidateCommand
 						'name',
 						InputArgument::OPTIONAL,
 						"nom du fichier, du dossier ou de l'archive à valider"
-				);
+				)
+			    ->addOption(
+			        'output-html',
+                    null,
+			        InputOption::VALUE_NONE,
+			        'output html'
+			        
+			    )
+			;
 		}
 
 		protected function execute(InputInterface $input, OutputInterface $output)
 		{
+            $name = $input->getArgument('name');
 			
-			$name = $input->getArgument('name');
-			$this->checkResourceAndValidate($name);
-			$this->consoleOutput($output);
+            $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
+			
+            $this->checkResourceAndValidate($name);
 
+			if($input->getOption('output-html'))
+			{
+				$this->HtmlOutput($output);
+			}
+			else
+			{
+				$this->consoleOutput($output);				
+			}
 		}
 
 		protected function validate($resource) 
@@ -58,10 +75,8 @@ class ValidateCommand extends BaseValidateCommand
         			
 					$responseErrors = $request->getResponseError();
 
-
 					if(empty($responseErrors))
 					{
-	        			echo "Fetch complete for (" . $self->currentResource . ")" . PHP_EOL;
 
 	        			$infos = $request->getResponseInfo();
 	        			$header_size = $infos['header_size'];
@@ -88,7 +103,7 @@ class ValidateCommand extends BaseValidateCommand
 					}
 					else
 					{
-						$this->resource->results[$this->currentResource][$this->getName()] = false;
+						$self->resource->results[$this->currentResource][$this->getName()] = false;
 					}
 
     			})
@@ -124,8 +139,9 @@ class ValidateCommand extends BaseValidateCommand
 				foreach($resource as  $commandName => $result)
 				{
 
-
 					if(!$result) continue;
+
+                    $output->writeln(sprintf('Résultats pour : %s', $result['url']));
 
 					if($result['status'] === "Valid")
 					{
@@ -135,10 +151,10 @@ class ValidateCommand extends BaseValidateCommand
 					}
 					else
 					{
-						$output->writeln(sprintf('<error>%s : Non valide</error>', $result['url']));
+						$output->writeln('<error>Non valide</error>');
 
 						foreach ($result['response_body']['messages'] as $value) {
-							$output->writeln(sprintf('<error>%s</error>', $value['message']));						
+							$output->writeln(sprintf('<comment>message : %s</comment>', $value['message']));						
 						}
 						
 						$output->writeln(sprintf('<comment>nombre erreurs : %s</comment>', $result['errors']));						
@@ -153,5 +169,51 @@ class ValidateCommand extends BaseValidateCommand
 			}
 
 			print str_repeat(PHP_EOL, 2);
+		}
+
+
+		protected function HtmlOutput(OutputInterface $output)
+		{
+
+            $tmp = array();
+            $tmp[] = '<section class="command-section">';
+            $tmp[] = sprintf('<h2>%s</h2>', "Résultats validation w3c");
+
+			foreach($this->resource->results as $resource)
+			{
+				foreach($resource as  $commandName => $result)
+				{
+
+
+					if(!$result) continue;
+
+					if($result['status'] === "Valid")
+					{
+						$tmp[] = sprintf('<p class="success">%s : Valide</p>', $result['url']);
+						$tmp[] = sprintf('<p class="info">Encodage détécté : %s <p>', $result['response_body']['source']['encoding']);
+
+					}
+					else
+					{
+						$tmp[] = sprintf('<p class="error">%s : Non valide</p>', $result['url']);
+
+						foreach ($result['response_body']['messages'] as $value) {
+							$tmp[] = sprintf('<p class="error">%s</p>', $value['message']);						
+						}
+						
+						$tmp[] = sprintf('<p class="">nombre erreurs : %s</p>', $result['errors']);						
+
+						if(!empty($result['warnings']))
+						{
+							$tmp[] = sprintf('<p class="">avertissements: %s</p>', $result['warnings']);						
+						}
+
+					}
+				}
+			}
+
+            $tmp[] = '</section>';
+
+            echo implode(PHP_EOL, $tmp);
 		}
 }
