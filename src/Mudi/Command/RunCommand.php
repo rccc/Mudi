@@ -51,7 +51,7 @@ class RunCommand extends MudiCommand
 			foreach($commands as $commandName => $command)
 			{
 
-				$cmd = sprintf('php /var/www/mudi/console.php %s %s  --quiet --output-html', $command,$this->resource->path);
+				$cmd = sprintf('php %sconsole.php %s %s  --quiet --output-html', BASE_PATH . DS, $command,$this->resource->path);
 
 				$output->writeln('Executing : ' . $commandName);
 
