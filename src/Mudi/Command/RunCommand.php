@@ -36,7 +36,6 @@ class RunCommand extends MudiCommand
 
 			$name = $input->getArgument('name');
 			$outputDirectory = $input->getArgument("output"); 
-			var_dump('output', $outputDirectory);
 	
 			$commands = array(
 				'validation w3c'=>'validate:w3c',

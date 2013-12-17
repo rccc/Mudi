@@ -12,10 +12,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CheckLinkCommand extends MudiCommand
 {
 	protected $curl;
-	protected $currentHref 		= null;
-	protected $linkList 		= array();
-	protected $completedList 	= array();
-	protected $DOMDocumentError = array();
+	protected $currentHref 		  = null;
+	protected $linkList 		  = array();
+	protected $completedList 	  = array();
+	protected $DOMDocumentError   = array();
+	protected $DOMDocumentWarning = array();
 
 	protected function configure()
 	{
@@ -59,6 +60,7 @@ class CheckLinkCommand extends MudiCommand
 			$this->getDeepLinkList($tmp);
 			$this->removeTmpDir($tmp);
 		}
+
 		$this->validate();
 
 		if($input->getOption('output-html'))
@@ -100,8 +102,25 @@ class CheckLinkCommand extends MudiCommand
 				{
 
 					$href = $node->getAttribute('href');
+					//empty href attribute ?
 					if(empty($href)){
 						$this->DOMDocumentError[] = 'un lien dont la valeur de l\'attribut "href" est vide a été trouvé dans le document';
+					}
+					//empty anchor target ?
+					elseif(false !== strpos($href, '#'))
+					{
+						$id = substr($href,1);
+						$node = $doc->getElementById($id);
+						if(is_null($node))
+						{
+							$this->DOMDocumentWarning[] = sprintf("Une ancre a été détectée ( %s ) mais la cible n'a pas été trouvée dans le document", $href);
+						}
+					}
+					//javascript:void(0) | onclick=my_function() ?
+					//@todo naive check : preg_match ?
+					elseif(false !== strpos($href,'(') && false === strpos($href, ')'))
+					{
+						$this->DOMDocumentWarning[] = sprintf("Une ancre semble contenir une appel à une fonction javascipt ( %s ) !", $href);						
 					}
 					else
 					{
@@ -250,7 +269,17 @@ class CheckLinkCommand extends MudiCommand
 		}
 		else
 		{
+			foreach ($this->DOMDocumentError as $error) {
+				$output->writeln(sprintf('<bg=red>%s</bg=red>', $error));
+			}
+		}
 
+		if(!empty($this->DOMDocumentWarning))
+		{
+			foreach($this->DOMDocumentWarning as $warning)
+			{
+				$output->writeln(sprintf('<comment>%s </comment>', $warning));
+			}
 		}
 
 	}
@@ -265,6 +294,8 @@ class CheckLinkCommand extends MudiCommand
 
 		if(!empty($this->DOMDocumentError))
 		{
+			$tmp[] = '<h3>erreurs</h3>';
+
 			foreach($this->DOMDocumentError as $error)
 			{
 				$tmp[] = sprintf('<p class="error">%s</p>', $error);				
@@ -289,9 +320,18 @@ class CheckLinkCommand extends MudiCommand
 				}
 			}
 		}
+
+		if(!empty($this->DOMDocumentWarning))
+		{
+			$tmp[] = '<h3>Avertissements</h3>';
+			foreach($this->DOMDocumentWarning as $warning)
+			{
+				$tmp[] = sprintf('<p class="warning">%s</p>', $warning);				
+			}
+		}
+
 		$tmp[] = '</section>';
 		echo implode(PHP_EOL, $tmp);
-	
 
 	}
 }
