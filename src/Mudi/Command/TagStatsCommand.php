@@ -38,32 +38,15 @@ class tagStatsCommand extends MudiCommand
 
         $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-		$this->checkResource($name);
+		$this->resource  = new \Mudi\Resource($name);
+        $this->tagUsage = new \Mudi\TagUsage();  
 
-		if($this->resource->isHtml){
-			$this->getTagStats($this->resource->path);
-		}
-		elseif($this->resource->isDir)
-		{
-			$this->getDeepTagStats($this->resource->path);				
-		}
-		elseif($this->resource->isArchive && $this->resource->isZip)
-		{
-			$tmp = $this->createTmpDir($this->resource);
-            if (is_dir($tmp)) 
-            { 
-                $zip = new \ZipArchive();
-                    if ($zip->open($this->resource->path) === TRUE) {
-                        $zip->extractTo($tmp);
-                        $zip->close();
-                    } 
-                    else {
-                        //@todo log
-                    }
-            }
-			$this->getDeepTagStats($tmp);
-			$this->removeTmpDir($tmp);
-		}
+        $files = $this->resource->getResourceFilesContent('html?');
+
+        foreach($files as $fileName => $fileContent)
+        {
+        	$this->resource->results[$fileName] = $this->tagUsage->getUsageStats($fileContent);
+        }
 
 		
 		if($input->getOption('output-html'))
@@ -76,90 +59,24 @@ class tagStatsCommand extends MudiCommand
 		}
 	}
 
-	protected function getTagStats($resource) {
-
-		$this->currentResource = $resource;
-
-		libxml_use_internal_errors(true);
-
-		$doc = new \DOMDocument();
-
-		if(!$doc->loadHTMLFile($resource))
-		{
-			foreach (libxml_get_errors() as $error) {
-				var_dump('libxml_error', $error);
-			}
-
-			libxml_clear_errors();
-		}
-		else{
-			$tagList = $doc->getElementsByTagName('*');
-			if($tagList->length == 0)
-			{
-				var_dump("Aucune balise trouvée dans le document ?!");
-			}
-			else{
-
-				$count_list = array();
-				foreach($tagList as $tag)
-				{
-					$tagName = $tag->tagName;
-					if(in_array($tagName, array_keys($count_list))){
-						$count_list[$tagName]++;
-					}
-					else{
-						$count_list[$tagName] = 1;
-					}
-				}
-			}
-
-			$this->resource->results[$this->currentResource][$this->getName()] = $count_list;
-
-		}
-
-	}
-
-	protected function getDeepTagStats($path)
-	{
-		$dir = new \RecursiveDirectoryIterator($path);
-		$it = new \RecursiveIteratorIterator($dir);
-
-			//max Depth @todo -> config
-		$it->setMaxDepth(2);
-
-		$filtered = new \RegexIterator($it, '/^.+\.html?$/i', \RecursiveRegexIterator::GET_MATCH);			
-
-		foreach ($filtered as $index => $file) 
-		{
-			$this->getTagStats($file[0]);	
-					//max file @todo -> config
-			if($index > 20) break;
-		}
-
-	}
-
 	protected function consoleOutput(OutputInterface $output)
 	{
 
-		foreach ($this->resource->results as $resource => $commandName) {
+		foreach ($this->resource->results as $fileName => $result) {
 
 			$tmp = array();
 
-			$output->writeln("Résultats pour : " . $resource);
+			$output->writeln("Résultats pour : " . $fileName);
 
-			foreach ($commandName as $result) {
-				foreach($result as $tagName => $count)
-				{
+			foreach($result as $tagName => $count)
+			{
 
-					$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
-				}
-				print implode(PHP_EOL, $tmp);
-
+				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
 			}
-
+			print implode(PHP_EOL, $tmp);
+			print PHP_EOL;
 		}
 
-		print str_repeat(PHP_EOL, 2);
 
 	}
 
@@ -171,20 +88,17 @@ class tagStatsCommand extends MudiCommand
         $tmp[] = sprintf('<h2>%s</h2>', "Résultats Statistiques balises");
 		$tmp[] = '<div class="section-body">';
 
-		foreach ($this->resource->results as $resourceName => $commandName) 
+		foreach ($this->resource->results as $fileName => $result) 
 		{
 			$tmp[] = '<div class="result">';			
-		    $tmp[] = sprintf('<div class="resource-name">%s</div>', $resourceName);
+		    $tmp[] = sprintf('<div class="resource-name label default">%s</div>', $fileName);
 	
-			foreach ($commandName as $result) {
-				$tmp[] = "<table>";
-				foreach($result as $tagName => $count)
-				{
-					$tmp[] = sprintf("<tr><td>%s</td><td>%d</td></tr>", $tagName, $count);
-				}
-				$tmp[] = "</table>";
-
+			$tmp[] = "<table>";
+			foreach($result as $tagName => $count)
+			{
+				$tmp[] = sprintf("<tr><td>%s</td><td>%d</td></tr>", $tagName, $count);
 			}
+			$tmp[] = "</table>";
 
 			$tmp[] = '</div><!-- .result -->';
 			

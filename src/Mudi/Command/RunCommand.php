@@ -35,6 +35,7 @@ class RunCommand extends MudiCommand
 		{
 
 			$name = $input->getArgument('name');
+			
 			$outputDirectory = $input->getArgument("output"); 
 	
 			$commands = array(
@@ -44,14 +45,13 @@ class RunCommand extends MudiCommand
 				)
 			;
 
-			$this->checkResource($name);
 
 			$tmp = array();
 
 			foreach($commands as $commandName => $command)
 			{
 
-				$cmd = sprintf('php %sconsole.php %s %s  --quiet --output-html', BASE_PATH . DS, $command,$this->resource->path);
+				$cmd = sprintf('php %sconsole.php %s %s  --quiet --output-html', BASE_PATH . DS, $command, $name);
 
 				$output->writeln('Executing : ' . $commandName);
 
