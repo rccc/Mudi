@@ -1,0 +1,52 @@
+<section class="panel panel-default section-result">
+	<div class="panel-heading">
+		<h2>Résultats validation HTML</h2>
+	</div>
+	<div class="panel-body">
+		
+		{% for documentName, result in results %}
+			
+			<div class="panel {{ result.status == "Valid" ? 'panel-success' : 'panel-danger' }} result-item">
+				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#w3c-{{documentName}}">
+					
+					<span>{{ documentName }}.html</span>
+
+					{% if result.status == "Valid" %}
+						<span class="label label-info pull-right">
+							Encodage détécté : {{result.response_body.source.encoding}}
+						</span>
+						<span class="label label-success pull-right">Valide</span>
+					
+					{% else %}
+
+						{% if result['warnings'] %}
+							<span class="label label-warning pull-right">{{result.warnings}}</span>
+						{% endif %}
+
+						<span class="label label-danger pull-right">{{result.errors}} </span>
+						
+					{% endif %}
+
+				</div> <!-- panel-heading -->
+
+				{% if result.status != "Valid"  %}
+
+					<div id="w3c-{{documentName}}" class="panel-body collapse in">
+
+							<h3>Messages : </h3>
+							{% if result.response_body.messages %}
+								{% for value in result.response_body.messages %}
+
+									<p class="well"><em>{{value.message}}</em></p>
+
+								{% endfor %}
+							{% endif %}
+
+					</div><!-- .panel-body -->
+
+				{% endif %}
+
+			</div> <!-- .result-item -->
+
+		{% endfor %}
+</section>

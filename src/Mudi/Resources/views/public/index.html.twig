@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Mudi index</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="{{app.request.basepath}}/src/Mudi/Resources/assets/css/bootstrap.min.css" />
+
+  <style>
+
+  	html {
+  		height: 100%;
+  	}
+
+	body > header {
+		background: #000;
+		padding-left: 20px;
+		position: fixed;		
+		width: 100%;
+	}
+
+	body > header h1 { margin-top: 10px;}
+
+	body > .container 
+	{
+		padding-top: 80px;
+	}
+	.center-form {
+		text-align: center;
+	}
+	.center-form input {
+		display:inline-block;
+	}
+
+
+  </style>
+</head>
+<body>
+	<header>
+		<h1>Mudi</h1>
+	</header>
+	<div class="container">
+		<div class="row">
+			{{ content }}
+		</div> <!-- .row-->
+	</div><!-- .container -->
+ 
+
+ <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+ <script type="text/javascript" src="{{app.request.basepath}}/src/Mudi/Resources/assets/js/bootstrap.min.js"></script>
+
+</body>
+</html>

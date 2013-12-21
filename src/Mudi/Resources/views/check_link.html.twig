@@ -1,0 +1,52 @@
+<section class="panel panel-default result-section">
+	<header class="panel-heading">
+		<h2>Résultats vérification des liens</h2>
+	</header>
+	<div class="panel-body">	
+
+	{% if results %}
+		{% for documentName, result in  results %}
+		
+			<div class="panel panel-info result-item">
+
+				<div class="panel-heading" data-toggle="collapse" data-target="#check-link-{{documentName}}">{{documentName}}.html</div>
+				<div id="check-link-{{documentName}}" class="panel-body collapse in">
+				<ul>
+			 	{% for link in result %}
+					{% if link.error %}
+						<li><span class="label label-danger">{{ link.error }}</span></li>
+
+					{% elseif link.exists %}
+						<li><span class="label label-success">{{ link.url }} : OK</span></li>
+					{% endif %}
+
+			 	{%  endfor %}
+				</ul>
+				</div> <!-- .bd -->
+		 	</div><!-- .result-item  -->
+			
+		{% endfor %}
+	{% endif %}
+	{% if errors %}
+
+		<div class="panel panel-danger result-item">
+			<div class="panel-heading" data-toggle="collapse" data-target="#check-link-errors">Erreur(s)</div>
+			<div id="check-link-errors" class="panel-body colapse in">
+
+				{% for error in errors %}
+					
+					{% for key_error, key_value in error %}
+						<div class="mod result">
+							<p class="label label-danger">{{key_error}}: {{key_value}}</p>
+						</div><!-- .result -->
+					{% endfor %}
+
+				{% endfor %}
+
+			</div><!-- .panel-body -->
+		</div><!-- .result-item -->
+
+	{% endif %}
+	</div><!-- .bd -->
+</section>
+

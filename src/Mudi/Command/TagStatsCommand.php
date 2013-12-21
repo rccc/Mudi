@@ -70,7 +70,6 @@ class tagStatsCommand extends MudiCommand
 
 			foreach($result as $tagName => $count)
 			{
-
 				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
 			}
 			print implode(PHP_EOL, $tmp);

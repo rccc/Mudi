@@ -66,13 +66,12 @@ class LinkChecker
 					$chunks = explode('/', $resource_path);
 					array_pop($chunks);
 					$chunks[] = substr($url,1);
-					
-					$url = implode('/', $chunks);	
+					$url = implode('/', $chunks);
+
 					if(file_get_contents($url))
 					{
 						$link->exists = true;
-					}
-							
+					}		
 				}
 
 			}
@@ -111,6 +110,7 @@ class LinkChecker
 				$http_code = (int) $infos['http_code'];
 		
 				$link->url = $infos['url'];
+				//@todo: prendr en compte certains code HTTP
 				if(empty($error) 
 					&& ($http_code >= 200 && $http_code < 400))
 				{

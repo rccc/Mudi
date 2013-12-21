@@ -29,15 +29,15 @@ class Resource
 
 		if(is_file($this->path))
 		{
-
 			$this->isFile = true;
 
-			$ext = end(explode('.', $name));
+			$ext =  substr(strrchr($this->name, '.'), 1);
 			$this->ext = $ext;
-
 			if(!in_array($ext, $this->authorizedExtensions))
 			{
-				throw new Exception('Le type de fichier est invalide');    
+				throw new \Exception('Le type de fichier est invalide'); 
+				die("?");
+   
 			}
 
 			switch($ext)
@@ -181,7 +181,7 @@ class Resource
 		return $filtered;	
 	}
 
-	protected function GetNodeList($path)
+	protected function GetNodeList($path, $tagName = 'a')
 	{
 
 		libxml_use_internal_errors(true);
@@ -201,7 +201,7 @@ class Resource
 		}
 		else
 		{
-			return $doc->getElementsByTagName('a');
+			return $doc->getElementsByTagName($tagName);
 		}
 
 	}

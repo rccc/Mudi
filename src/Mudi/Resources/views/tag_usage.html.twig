@@ -1,0 +1,29 @@
+<section class="panel panel-default  result-section">
+	<header class="panel-heading">
+		<h2>Résultats Statistiques balises</h2>
+	</header>
+	<div class="panel-body">
+
+		{% for documentName, result in results %}
+
+			<div class="panel panel-info result-item">
+				<div class="panel-heading" data-toggle="collapse" data-target="#tag-usage-{{documentName}}">
+					{{documentName}}.html
+				</div>
+				<div id="tag-usage-{{documentName}}" class="panel-body collapse">
+					<table class="table table-condensed table-striped">
+						{% for tagName, count in result %}
+							<tr><td>{{tagName}}</td><td>{{count}}</td></tr>
+						{% endfor %}
+					</table>
+				</div> <!-- .bd -->
+			</div><!-- .result-item -->	
+
+		{% endfor %}
+
+	</div> <!-- .bd -->
+	
+</section>
+
+
+
