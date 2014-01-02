@@ -7,18 +7,24 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class tagStatsCommand extends MudiCommand
+
+class CasperjsScreenshotCommand  extends MudiCommand
 {
+
 	protected function configure()
 	{
-
 		$this
-		->setName('tag:stats')
-		->setDescription('Statistiques des balises HTML utilisées')
+		->setName('casperjs:screenshot')
+		->setDescription('retourne un screenshot')
 		->addArgument(
 			'name',
 			InputArgument::OPTIONAL,
-			"nom du fichier, du dossier ou de l'archive à analyser"
+			"nom du fichier HTML"
+			)
+		->addArgument(
+			'output',
+			InputArgument::OPTIONAL,
+			"dossier dans lequel seront sauvegardés les screenshots"
 			)
 		->addOption(
 			'output-html',
@@ -33,13 +39,13 @@ class tagStatsCommand extends MudiCommand
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$name = $input->getArgument('name');
+		$output_dir = $input->getArgument('output');
 
         $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
-
-        $service = new \Mudi\ProxyService\TagUsageProxyService($name);
-
-        $this->results = $service->execute();
 		
+		$service = new \Mudi\ProxyService\ScreenshotProxyService($name, $output_dir);
+		$this->results = $service->execute();
+
 
 		if($input->getOption('output-html'))
 		{
@@ -49,32 +55,23 @@ class tagStatsCommand extends MudiCommand
 		{
 			$this->consoleOutput($output);				
 		}
+	
 	}
 
-	protected function consoleOutput(OutputInterface $output)
+
+	public function consoleOutput(OutputInterface $output)
 	{
-
 		foreach ($this->results->all() as $fileName => $result) {
-
-			$tmp = array();
-
-			$output->writeln("Résultats pour : " . $fileName);
-
-			foreach($result->stats as $tagName => $count)
-			{
-				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
-			}
-			print implode(PHP_EOL, $tmp);
-			print PHP_EOL;
+			$output->writeln($result->message);
 		}
-
-
 	}
 
-	protected function HtmlOutput(OutputInterface $output)
+	public function HtmlOutput()
 	{
 		$twig = $this->getApplication()->getService('twig');
-		
-		print $twig->render('tag_usage.html.twig', array('results' => $this->results->all()));
+
+		print $twig->render('screenshot.html.twig', array("results" => $this->results->all()));
 	}
+
+
 }

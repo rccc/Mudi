@@ -9,10 +9,15 @@
 		
 			<div class="panel panel-info result-item">
 
-				<div class="panel-heading" data-toggle="collapse" data-target="#check-link-{{documentName}}">{{documentName}}.html</div>
-				<div id="check-link-{{documentName}}" class="panel-body collapse in">
+				<div class="panel-heading" data-toggle="collapse" data-target="#check-link-{{loop.index}}">{{documentName}}</div>
+				<div id="check-link-{{loop.index}}" class="panel-body collapse in">
 				<ul>
-			 	{% for link in result %}
+				{% if result.errors %}
+					{% for error in result.errors %}
+						<li><span class="label label-danger">{{ error }}</span></li>
+					{% endfor %}
+				{% endif %}
+			 	{% for link in result.urls %}
 					{% if link.error %}
 						<li><span class="label label-danger">{{ link.error }}</span></li>
 
@@ -36,7 +41,7 @@
 				{% for error in errors %}
 					
 					{% for key_error, key_value in error %}
-						<div class="mod result">
+						<div class="result">
 							<p class="label label-danger">{{key_error}}: {{key_value}}</p>
 						</div><!-- .result -->
 					{% endfor %}

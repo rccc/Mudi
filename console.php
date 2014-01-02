@@ -21,7 +21,7 @@ $app = new Application;
 
 //twig as service
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => VIEW_PATH . '/console',
+    'twig.path' => array(VIEW_PATH, VIEW_PATH . '/public'),
     'twig.options' => array('autoescape' => false)
     ));
 
@@ -32,10 +32,15 @@ $app->register(new ConsoleServiceProvider(), array(
     'console.version' => '0.1.0',
     ));
 
+$app["request"] = array('basepath' => 'http://localhost/mudi/');
+
 $commands = array(
     new \Mudi\Command\ValidateCommand(),
+    new \Mudi\Command\TidyCommand(),
     new \Mudi\Command\TagStatsCommand(),
     new \Mudi\Command\CheckLinkCommand(),
+    new \Mudi\Command\CasperjsCommand(),
+    new \Mudi\Command\CasperjsScreenshotCommand(),
     new \Mudi\Command\RunCommand()
     );
 

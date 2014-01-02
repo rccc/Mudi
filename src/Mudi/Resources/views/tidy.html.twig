@@ -1,0 +1,41 @@
+<section class="panel panel-default  result-section">
+	<header class="panel-heading">
+		<h2>Résultats validation Tidy</h2>
+	</header>
+	<div class="panel-body">
+		{% for documentName, result in results %}
+
+			<div class="panel {{ result.status == 0 ? 'panel-info' : result.status == 1 ? 'panel-warning' : 'panel-danger' }} result-item">
+				<div class="panel-heading" data-toggle="collapse" data-target="#tidy-{{loop.index}}">
+					{{documentName}}
+				</div>
+				<div id="tidy-{{loop.index}}" class="panel-body collapse">
+					
+					 {% if result.errors %}
+					 	<h4>Messages</h4>
+					 	<ul>
+					 	{% for error in result.errors %}
+							<li><em>{{error|escape}}</em></li>
+					 	{% endfor %}
+					 	</ul>
+					{% endif %}
+
+					 {% if result.infos %}
+					 	<h4>Infos</h4>
+					 	<ul>
+					 	{% for info in result.infos %}
+							<li><em>{{info}}</em></li>
+					 	{% endfor %}
+					 	</ul>
+					{% endif %}
+
+					<hr />
+					<p>statut : {{result.status}}, erreur(s) : {{result.count_errors}}, avertissement(s) : {{result.count_warnings}}, accessibilité : {{result.count_access}}</p>
+
+				</div> <!-- .panel-body -->
+			</div><!-- .result-item -->	
+
+		{% endfor %}
+
+	</div> <!-- .panel-body -->
+</section>

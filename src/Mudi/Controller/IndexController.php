@@ -42,6 +42,7 @@ class IndexController
 		$htmlFiles = $resource->getFiles('html?');
 
 		//on lance la validation
+        /*
 		$validator = new \Mudi\Validator\HtmlServiceValidator();
 
         foreach($htmlFiles as $file_path => $file) 	    
@@ -50,8 +51,8 @@ class IndexController
         	$results[$file_name] = $validator->validate($file);
         }		
 
-        $response[] = $app['twig']->render('validation_html.html.twig', array('results'=> $results));
-        
+        $response[] = $app['twig']->render('validation-w3c.html.twig', array('results'=> $results));
+        */  
         //on vérifie les liens
         $results = array();
         $resource->errors = array();
@@ -80,15 +81,27 @@ class IndexController
         $results = array();
         $tagUsage = new \Mudi\TagUsage();
 
-        $files = $resource->getResourceFilesContent('html?');
 
-        foreach($files as $file_path => $file_content)
+        foreach($htmlFiles as $file_path => $file_content)
         {
         	$file_name = pathinfo($file_path)['filename'];
         	$results[$file_name] = $tagUsage->getUsageStats($file_content);
         }
 
         $response[] = $app['twig']->render('tag_usage.html.twig', array('results' => $results ));
+
+
+        //tidy
+        $results = array();
+        $tidy = new \Mudi\Validator\HtmlTidyValidator();
+
+        $collection = $this->resource->getFilesPath('html?');
+
+        foreach($collection->all() as $fileName => $filePath)
+        {
+            $output_coll = $tidy->validateFile($filePath);
+        }
+        $response[] = $app['twig']->render('tidy.html.twig', array('results' => $output_coll->all() ));
 
         $content = implode(PHP_EOL, $response);
        	

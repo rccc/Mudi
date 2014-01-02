@@ -2,6 +2,10 @@
 
 namespace Mudi;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+use Neutron\TemporaryFilesystem\TemporaryFilesystem;
+
 /**
  * la ressource devant être validée.
  * Peut être un fichier, dossier ou archive 'zip'
@@ -15,11 +19,11 @@ class Resource
 	public $isArchive	= false;
 	public $isZip		= false;
 	public $ext			= "";
-	public $errors      = array();
-	public $results		= array();
 	public $name 		= "";
 	public $path 		= "";
+	public $archive_path = "";  //chemin du dossier temporaire contenant le contenu de l'archive
 	public $authorizedExtensions = array("htm","html", "zip");
+	public $files       = array(); // tableau contenant une liste de fichiers 
 
 
 	public function __construct($name)
@@ -35,9 +39,7 @@ class Resource
 			$this->ext = $ext;
 			if(!in_array($ext, $this->authorizedExtensions))
 			{
-				throw new \Exception('Le type de fichier est invalide'); 
-				die("?");
-   
+				throw new \Exception('Le type de fichier est invalide');    
 			}
 
 			switch($ext)
@@ -49,6 +51,7 @@ class Resource
 				case 'zip':
 				$this->isArchive = true;
 				$this->isZip = true;
+				$this->extractArchive();
 				break;
 			}
 
@@ -67,183 +70,44 @@ class Resource
 		return stream_resolve_include_path($this->name);
 	}
 
-	public function getUrls()
+
+	public function getFiles($motif = '*.html')
 	{
-		$urls = array();
-		$array = array();
+		if(empty($this->files[$motif]))
+		{	
 
-		if($this->isHtml)
-		{
-			$array[$this->path] = $this->getNodeList($this->path);
-		}
-
-		elseif($this->isArchive)
-		{
-			$tmp_path = $this->createTmpDir();
-            $zip = new \ZipArchive();
-                if ($zip->open($this->path) === TRUE) {
-                    $zip->extractTo($tmp_path);
-                    $zip->close();
-                } 
-                else {
-                    //@todo log
-                }			
-			$array = $this->deepGetNodeList($tmp_path);
-			$this->removeTmpDir($tmp_path);
-		}
-
-		elseif($this->isDir)
-		{
-			$array = $this->deepGetNodeList($this->path);	
-		}
-
-		foreach($array as $documentPath => $nodeList)
-		{
-			if($nodeList->length >0)
+			if($this->isHtml)
 			{
-				foreach($nodeList as $node)
-				{
-					$urls[$documentPath][] = $node->getAttribute('href');
+				$this->files[$motif][] = new \SplFileInfo($this->name);
+				
+			}
+			elseif($this->isArchive || $this->isDir)
+			{
+				$path = $this->isArchive ?  $this->archive_path : $this->path;
+
+				$finder = new Finder();        
+				$finder->files()->in($path)->name($motif);
+
+				foreach ($finder as $file) {
+					$this->files[$motif][] = $file;
 				}
-			}
-			else{
-				$this->errors[] = array($documentPath => 'Aucun lien trouvé');
+
 			}
 		}
 
-		return $urls;
+		return $this->files[$motif];
 	}
 
-
-	public function getResourceFilesContent($regex_extension, $max_depth = 2)
+	public function extractArchive()
 	{
-		return $this->getFiles($regex_extension, $max_depth);
+		$fs = TemporaryFilesystem::create();
+		$this->archive_path = $fs->createTemporaryDirectory();
+
+		$zip = new \ZipArchive();
+		if ($zip->open($this->path) === TRUE) {
+			$zip->extractTo($this->archive_path);
+			$zip->close();
+		}
 	}
-
-	//todo à remplacer par getResourceFilesContent
-	public function getFiles($regex_extension, $max_depth = 2)
-	{
-		$files = array();			
-
-		if($this->isHtml)
-		{
-			$files[$this->path] = file_get_contents($this->path);
-		}
-		elseif($this->isDir)
-		{
-	 		$filtered = $this->getFileRecursively($this->path,$regex_extension, $max_depth);
-
-			foreach ($filtered as $index => $file) 
-			{
-				$files[$file[0]] = file_get_contents($file[0]);	
-				//max file @todo -> config
-				if($index > 20) break;
-			}			
-		}
-		elseif($this->isArchive)
-		{
-			$tmp_path = $this->createTmpDir();
-		    $zip = new \ZipArchive();
-            if ($zip->open($this->path) === TRUE) {
-                $zip->extractTo($tmp_path);
-                $zip->close();
-            } 
-            else {
-                //@todo log
-            }			
-	 		$filtered = $this->getFileRecursively($tmp_path,$regex_extension, $max_depth);
-
-			foreach ($filtered as $index => $file) 
-			{
-				$files[$file[0]] = file_get_contents($file[0]);	
-				//max file @todo -> config
-				if($index > 20) break;
-			}
-			$this->removeTmpDir($tmp_path);
-		}
-
-		
-		return $files;
-
-	}
-
-	protected function getFileRecursively($path, $regex_extension, $max_depth = 2)
-	{
-		$results = array();
-		$dir = new \RecursiveDirectoryIterator($path);
-		$it = new \RecursiveIteratorIterator($dir);
-
-			//max Depth @todo -> config
-		$it->setMaxDepth($max_depth);
-
-		$filtered = new \RegexIterator($it, '/^.+\.html?$/i', \RecursiveRegexIterator::GET_MATCH);	
-
-		return $filtered;	
-	}
-
-	protected function GetNodeList($path, $tagName = 'a')
-	{
-
-		libxml_use_internal_errors(true);
-		
-		$doc = new \DOMDocument();
-
-		if(!$doc->loadHTMLFile($path))
-		{
-			$errors = array();
-
-			foreach (libxml_get_errors() as $error) {
-				$array[] = $error; 
-			}
-
-			libxml_clear_errors();
-			return $errors();
-		}
-		else
-		{
-			return $doc->getElementsByTagName($tagName);
-		}
-
-	}
-
-	public function deepGetNodeList($path)
-	{
-		$results = array();			
-		$filtered = $this->getFileRecursively($path, 'html?');
-
-		foreach ($filtered as $index => $file) 
-		{
-			$results[$file[0]] = $this->getNodeList($file[0]);	
-					//max file @todo -> config
-			if($index > 20) break;
-		}
-
-		return $results;
-	}
-
-    public function createTmpDir()
-    {
-        $fs = $this->getFilesystem();
-        $tmp = tempnam(sys_get_temp_dir(), $this->ext);
-        if ($fs->exists($tmp)) $fs->remove($tmp); 
-        $fs->mkdir($tmp);
-        
-        return $tmp;
-    }
-
-    public function removeTmpDir($path)
-    {
-        $fs = $this->getFilesystem();
-        $fs->remove($path);
-    }
-
-    protected function getFilesystem()
-    {
-        if(empty($this->fs)){
-            $this->fs = new \Symfony\Component\Filesystem\Filesystem();
-        }
-
-        return $this->fs;
-    }
 
 }

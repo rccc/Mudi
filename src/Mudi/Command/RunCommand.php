@@ -39,35 +39,50 @@ class RunCommand extends MudiCommand
 			$outputDirectory = $input->getArgument("output"); 
 	
 			$commands = array(
-				'validation w3c'=>'validate:w3c',
-				'Vérification des liens' => 'check-link',
-				'Stats balises utilisées' => 'tag:stats'
+				'validation Tidy'           => array('validate:tidy' => array()),
+				'validation W3C'			=> array('validate:w3c' => array()),
+				'Vérification des liens' 	=> array('check-link'=> array()),
+				'Stats balises utilisées' 	=> array('tag:stats' => array()),
+				'Screenshot'				=> array('casperjs:screenshot' => array($outputDirectory))
+			
 				)
 			;
 
 
 			$tmp = array();
-
-			foreach($commands as $commandName => $command)
+			$processList = array();
+			$manager = new \Neutron\ProcessManager\ProcessManager();
+			
+			foreach($commands as $commandName => $data)
 			{
+				static $i = 0;
+				$command = key($data);
+				$args = $commands[$commandName][$command];
 
-				$cmd = sprintf('php %sconsole.php %s %s  --quiet --output-html', BASE_PATH . DS, $command, $name);
+				$cmd = sprintf('php %sconsole.php %s %s %s --quiet --output-html', BASE_PATH . DS, $command, $name, implode(' ', $args));
 
-				$output->writeln('Executing : ' . $commandName);
+				$output->writeln($cmd);
 
-				$process = new Process($cmd);
-				$process->start();
-				while ($process->isRunning()) {}
+				$processList[$i] = new Process($cmd);
+				
+				$manager->add($processList[$i]);
+
+				$i++;
+			}
+
+			$manager->run();
+
+			foreach ($processList as $process) {
 				if (!$process->isSuccessful()) {
  	   				echo $process->getErrorOutput();
 				}
 				else{
 					$tmp[] = $process->getOutput();
-				}	
+				}
 			}
 
 			$twig = $this->getApplication()->getService('twig');
-			$html = $twig->render('run-command.twig', array(
+			$html = $twig->render('index.html.twig', array(
     			'content' => implode(PHP_EOL, $tmp)
     		));
 			

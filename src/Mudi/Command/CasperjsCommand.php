@@ -7,25 +7,26 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class tagStatsCommand extends MudiCommand
+
+class CasperjsCommand  extends MudiCommand
 {
+
 	protected function configure()
 	{
 
 		$this
-		->setName('tag:stats')
-		->setDescription('Statistiques des balises HTML utilisées')
+		->setName('casperjs:run')
+		->setDescription('execute un script Casperjs')
 		->addArgument(
 			'name',
 			InputArgument::OPTIONAL,
-			"nom du fichier, du dossier ou de l'archive à analyser"
+			"nom du script"
 			)
 		->addOption(
 			'output-html',
 			null,
 			InputOption::VALUE_NONE,
 			'output html'
-
 			)
 		;
 	}
@@ -36,11 +37,8 @@ class tagStatsCommand extends MudiCommand
 
         $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-        $service = new \Mudi\ProxyService\TagUsageProxyService($name);
-
-        $this->results = $service->execute();
+        $res = shell_exec(sprintf('casperjs test %s', $name));
 		
-
 		if($input->getOption('output-html'))
 		{
 			$this->HtmlOutput($output);
@@ -53,28 +51,6 @@ class tagStatsCommand extends MudiCommand
 
 	protected function consoleOutput(OutputInterface $output)
 	{
-
-		foreach ($this->results->all() as $fileName => $result) {
-
-			$tmp = array();
-
-			$output->writeln("Résultats pour : " . $fileName);
-
-			foreach($result->stats as $tagName => $count)
-			{
-				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
-			}
-			print implode(PHP_EOL, $tmp);
-			print PHP_EOL;
-		}
-
-
 	}
 
-	protected function HtmlOutput(OutputInterface $output)
-	{
-		$twig = $this->getApplication()->getService('twig');
-		
-		print $twig->render('tag_usage.html.twig', array('results' => $this->results->all()));
-	}
 }

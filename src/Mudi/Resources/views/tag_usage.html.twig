@@ -3,26 +3,24 @@
 		<h2>Résultats Statistiques balises</h2>
 	</header>
 	<div class="panel-body">
-
+		
 		{% for documentName, result in results %}
 
-			<div class="panel panel-info result-item">
-				<div class="panel-heading" data-toggle="collapse" data-target="#tag-usage-{{documentName}}">
-					{{documentName}}.html
+			<div class="panel {{result.status == 0 ? 'panel-success' : result.status == 1 ? 'panel-warning' : 'panel-error' }} result-item">
+				<div class="panel-heading" data-toggle="collapse" data-target="#tag-usage-{{loop.index}}">
+					{{documentName}}
 				</div>
-				<div id="tag-usage-{{documentName}}" class="panel-body collapse">
+				<div id="tag-usage-{{loop.index}}" class="panel-body collapse">
 					<table class="table table-condensed table-striped">
-						{% for tagName, count in result %}
+						{% for tagName, count in result.stats %}
 							<tr><td>{{tagName}}</td><td>{{count}}</td></tr>
 						{% endfor %}
 					</table>
-				</div> <!-- .bd -->
+				</div> <!-- .panel-body -->
 			</div><!-- .result-item -->	
 
 		{% endfor %}
-
 	</div> <!-- .bd -->
-	
 </section>
 
 

@@ -11,92 +11,104 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ValidateCommand extends BaseValidateCommand
 {
-		protected function configure()
-		{
-			$this->curl = new \RollingCurl\RollingCurl();
+	protected function configure()
+	{
+		$this->curl = new \RollingCurl\RollingCurl();
 
-			$this
-				->setName('validate:w3c')
-				->setDescription('Validation W3c')
-				->addArgument(
-						'name',
-						InputArgument::OPTIONAL,
-						"nom du fichier, du dossier ou de l'archive à valider"
-				)
-			    ->addOption(
-			        'output-html',
-                    null,
-			        InputOption::VALUE_NONE,
-			        'output html'
-			        
-			    )
-			;
+		$this
+		->setName('validate:w3c')
+		->setDescription('Validation W3c')
+		->addArgument(
+			'name',
+			InputArgument::OPTIONAL,
+			"nom du fichier, du dossier ou de l'archive à valider"
+			)
+		->addOption(
+			'output-html',
+			null,
+			InputOption::VALUE_NONE,
+			'output html'
+
+			)
+		;
+	}
+
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+
+		$name = $input->getArgument('name');
+
+		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
+
+		$service = new \Mudi\ProxyService\W3CMarkupValidatorProxyService($name);
+
+		$this->results = $service->execute();
+
+
+		if($input->getOption('output-html'))
+		{
+			$this->HtmlOutput($output);
 		}
+		else
+		{
+			$this->consoleOutput($output);				
+		}
+	}
 
-		protected function execute(InputInterface $input, OutputInterface $output)
+	protected function consoleOutput(OutputInterface $output)
+	{
+
+		foreach($this->results->all() as $fileName => $result)
 		{
 
-            $name = $input->getArgument('name');
-			
-            $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
-			
-			$this->resource  = new \Mudi\Resource($name);
-            $this->validator = new \Mudi\Validator\HtmlServiceValidator();  
+			$output->writeln(sprintf('Résultats pour : %s', $fileName));
 
-            foreach($this->resource->getFiles('html?') as $file_path => $file) 	    
-            {
-            	$this->resource->results[$file_path] = $this->validator->validate($file);
-            }
-
-			if($input->getOption('output-html'))
+			if(!empty($result->status) && $result->status === "Abort")
 			{
-				$this->HtmlOutput($output);
+				$output->writeln(sprintf('<error>status: le document a été ignoré</error>', $result->status));						
+				$output->writeln(sprintf('<error>status: %s</error>', $result->status));						
+				return;
+			}	
+
+			if($result->isValid)
+			{
+				$output->writeln(sprintf('<bg=green>%s : Valide</bg=green>', $fileName));
+				$output->writeln(sprintf('Encodage détécté : %s ', $result->encoding));
+
 			}
 			else
 			{
-				$this->consoleOutput($output);				
-			}
-		}
+				$output->writeln('<error>Non valide</error>');
 
-		protected function consoleOutput(OutputInterface $output)
-		{
-
-			foreach($this->resource->results as $fileName => $result)
-			{
-
-                $output->writeln(sprintf('Résultats pour : %s', $fileName));
-
-				if($result['status'] === "Valid")
-				{
-					$output->writeln(sprintf('<bg=green>%s : Valide</bg=green>', $path));
-					$output->writeln(sprintf('Encodage détécté : %s ', $result['response_body']['source']['encoding']));
-
+				foreach ($result->messages as $value) {
+						//var_dump($value);
+					$output->writeln(sprintf('<comment>message : %s</comment>', $value['message']));						
 				}
-				else
-				{
-					$output->writeln('<error>Non valide</error>');
 
-					foreach ($result['response_body']['messages'] as $value) {
-						$output->writeln(sprintf('<comment>message : %s</comment>', $value['message']));						
-					}
-					
-					$output->writeln(sprintf('<comment>nombre erreurs : %s</comment>', $result['errors']));						
+				$output->writeln(sprintf('<comment>nombre erreurs : %s</comment>', $result->errors));						
 
-					if(!empty($result['warnings']))
-					{
-						$output->writeln(sprintf('<comment>avertissements: %s</comment>', $result['warnings']));						
-					}
-
-				}	
 			}
 
-			print str_repeat(PHP_EOL, 2);
+			if(!empty($result->warnings))
+			{
+				$output->writeln(sprintf('<comment>avertissements: %s</comment>', $result->warnings));						
+			}
+
+
 		}
 
 
-		protected function HtmlOutput(OutputInterface $output)
-		{
+		print str_repeat(PHP_EOL, 2);
+	}
 
+
+	protected function HtmlOutput(OutputInterface $output)
+	{
+		$twig = $this->getApplication()->getService('twig');
+
+		print $twig->render('validation-w3c.html.twig', array('results'=> $this->results->all()));
+
+			/*
             $tmp = array();
             $tmp[] = '<section class="command-section">';
             $tmp[] = sprintf('<h2>%s</h2>', "Résultats validation w3c");
@@ -140,5 +152,7 @@ class ValidateCommand extends BaseValidateCommand
             $tmp[] = '</section>';
 
             echo implode(PHP_EOL, $tmp);
-		}
-}
+
+            */
+        }
+    }

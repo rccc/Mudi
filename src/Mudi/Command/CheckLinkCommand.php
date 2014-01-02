@@ -38,18 +38,12 @@ class CheckLinkCommand extends MudiCommand
 		$name = $input->getArgument('name');
 
 		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
-		
-		$this->resource  	= new \Mudi\Resource($name);
-        $this->linkChecker 	= new \Mudi\Link\LinkChecker();
-        
 
-        foreach($this->resource->getUrls() as $documentPath => $urls)
-        {
-        	if (OutputInterface::VERBOSITY_NORMAL <= $output->getVerbosity()) {
-    			$output->writeln('Document en cours : ' . $documentPath);
-			}
-			$this->resource->results[$documentPath] = $this->linkChecker->check($urls, $documentPath);
-        }
+		$service = new \Mudi\ProxyService\LinkCheckerProxyService($name);
+
+		$this->results = $service->execute();
+		
+
 
 		if($input->getOption('output-html'))
 		{
@@ -65,38 +59,30 @@ class CheckLinkCommand extends MudiCommand
 	protected function consoleOutput(OutputInterface $output)
 	{
 
-		if(!empty($this->resource->results) )
+		foreach($this->results->all() as $documentPath => $result)
 		{
-
-			foreach($this->resource->results as $documentPath => $links)
+			$output->writeln("Résultats pour : " . $documentPath);
+			
+			if(!empty($result->errors))
 			{
-				$output->writeln("Résultats pour : " . $documentPath);
-
-				foreach($links as  $link)
-				
-				if(!empty($link->error) || !$link->exists)
+				foreach($result->errors as $error)
 				{
-					$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=red> %s </bg=red>', $link->raw_url, $link->error));
+					$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=red> %s </bg=red>', $documentPath, $error));
 				}
-				elseif($link->exists)
-				{
-					$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=green> OK </bg=green>', $link->url));
-				}
-				
 			}
-
-		}
-
-		if(!empty($this->resource->errors))
-		{
-
-			$output->writeln(sprintf('<bg=red>Des erreurs sont survenues  : </bg=red>'));
-
-			foreach($this->resource->errors as $error)
-			{
-				foreach($error as $error_key => $error_value)
-				{
-					$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=red> %s </bg=red>', $error_key, $error_value));
+			else
+			{		
+				foreach($result->urls as  $link)
+				{	
+					if(!empty($link->error) || !$link->exists)
+					{
+						$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=red> %s </bg=red>', $link->raw_url, $link->error));
+					}
+					elseif($link->exists)
+					{
+						$output->writeln(sprintf('<bg=cyan> %s <bg=cyan><bg=green> OK </bg=green>', $link->url));
+					}
+					
 				}
 			}
 		}
@@ -104,9 +90,16 @@ class CheckLinkCommand extends MudiCommand
 	}
 
 
+
+
 	protected function HtmlOutput(OutputInterface $output)
 	{
 
+		$twig = $this->getApplication()->getService('twig');
+		
+		print $twig->render('check_link.html.twig', array('results' => $this->results->all(), 'errors' => array()));
+		
+		/*
 		$tmp = array();
 		$tmp[] = '<section class="command-section">';
 		$tmp[] = '<h2>Résultats vérification des liens</h2>';
@@ -137,7 +130,7 @@ class CheckLinkCommand extends MudiCommand
 					$tmp[] = '</div><!-- .result -->';
 
 				}
-				
+
 			}
 
 			if(!empty($this->resource->errors))
@@ -145,7 +138,7 @@ class CheckLinkCommand extends MudiCommand
 				foreach($this->resource->errors as $error)
 				{
 					foreach($error as $key_error => $value_error)
-					$tmp[] = '<div class="result">';            
+						$tmp[] = '<div class="result">';            
 					$tmp[] = sprintf('<p class="label error">%s : %s </p>',$key_error,$value_error);
 					$tmp[] = '</div><!-- .result -->';
 				}
@@ -155,6 +148,6 @@ class CheckLinkCommand extends MudiCommand
 		$tmp[] = '</div>';
 		$tmp[] = '</section>';
 		echo implode(PHP_EOL, $tmp);
-
+		*/
 	}
 }
