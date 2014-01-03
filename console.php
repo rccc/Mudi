@@ -26,7 +26,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     ));
 
 
-    //console as service
+//console as service
 $app->register(new ConsoleServiceProvider(), array(
     'console.name' => 'Mudi console',
     'console.version' => '0.1.0',

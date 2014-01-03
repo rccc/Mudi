@@ -28,7 +28,10 @@ class Resource
 
 	public function __construct($name)
 	{
-		$this->name = $name;
+		$this->name = $this->slugify($name);
+
+		var_dump('SLUG', $this->name);
+
 		$this->path = $this->getPathFromName();
 
 		if(is_file($this->path))
@@ -109,5 +112,31 @@ class Resource
 			$zip->close();
 		}
 	}
+
+	public function slugify($text) 
+	{ 
+                // replace non letter or digits by - 
+		$text = preg_replace('~[^\\pL\d]+~u', '-', $text); 
+
+                 // trim 
+		$text = trim($text, '-'); 
+
+                  // transliterate 
+		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); 
+
+                  // lowercase 
+		$text = strtolower($text); 
+
+                  // remove unwanted characters 
+		$text = preg_replace('~[^-\w]+~', '', $text); 
+		echo $text; 
+		if (empty($text)) 
+		{ 
+                         //echo 'in'; 
+			return 'n-a'; 
+		} 
+
+		return $text; 
+	} 
 
 }
