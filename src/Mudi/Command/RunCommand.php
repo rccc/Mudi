@@ -59,7 +59,7 @@ class RunCommand extends MudiCommand
 				$command = key($data);
 				$args = $commands[$commandName][$command];
 
-				$cmd = sprintf('php %sconsole.php %s %s %s --quiet --output-html', BASE_PATH . DS, $command, $name, implode(' ', $args));
+				$cmd = sprintf('php %sconsole.php %s %s %s --output-html', BASE_PATH . DS, $command, $name, implode(' ', $args));
 
 				$output->writeln($cmd);
 
