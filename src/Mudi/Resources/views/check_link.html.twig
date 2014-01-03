@@ -7,7 +7,7 @@
 	{% if results %}
 		{% for documentName, result in  results %}
 		
-			<div class="panel panel-info result-item">
+			<div class="panel {{ result.errors is empty ? 'panel-info' : 'panel-danger' }} result-item">
 
 				<div class="panel-heading" data-toggle="collapse" data-target="#check-link-{{loop.index}}">{{documentName}}</div>
 				<div id="check-link-{{loop.index}}" class="panel-body collapse in">

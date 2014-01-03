@@ -41,7 +41,8 @@ $commands = array(
     new \Mudi\Command\CheckLinkCommand(),
     new \Mudi\Command\CasperjsCommand(),
     new \Mudi\Command\CasperjsScreenshotCommand(),
-    new \Mudi\Command\RunCommand()
+    new \Mudi\Command\RunCommand(),
+    new \Mudi\Command\RunAllCommand()
     );
 
 foreach ($commands as $command) {
