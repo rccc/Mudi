@@ -28,34 +28,35 @@ class Resource
 
 	public function __construct($name)
 	{
-		$this->name = $this->slugify($name);
-
-		var_dump('SLUG', $this->name);
-
+		$this->name = $name;
+		$this->ext = substr(strrchr($this->name, '.'), 1);
 		$this->path = $this->getPathFromName();
+
+		$this->name = $this->slugify( pathinfo($name)['basename'] );
+		
+		var_dump('SLUG', $this->name);
 
 		if(is_file($this->path))
 		{
 			$this->isFile = true;
 
-			$ext =  substr(strrchr($this->name, '.'), 1);
-			$this->ext = $ext;
-			if(!in_array($ext, $this->authorizedExtensions))
+			if(!in_array($this->ext, $this->authorizedExtensions))
 			{
 				throw new \Exception('Le type de fichier est invalide');    
 			}
 
-			switch($ext)
+			switch($this->ext)
 			{
 				case 'htm':
 				case 'html':
-				$this->isHtml = true;
-				break;
+					$this->isHtml = true;
+					break;
 				case 'zip':
-				$this->isArchive = true;
-				$this->isZip = true;
-				$this->extractArchive();
-				break;
+					$this->isArchive = true;
+					$this->isZip = true;
+					$this->extractArchive();
+					break;
+
 			}
 
 		}
@@ -115,24 +116,14 @@ class Resource
 
 	public function slugify($text) 
 	{ 
-                // replace non letter or digits by - 
 		$text = preg_replace('~[^\\pL\d]+~u', '-', $text); 
-
-                 // trim 
 		$text = trim($text, '-'); 
-
-                  // transliterate 
 		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); 
-
-                  // lowercase 
 		$text = strtolower($text); 
-
-                  // remove unwanted characters 
 		$text = preg_replace('~[^-\w]+~', '', $text); 
 		echo $text; 
 		if (empty($text)) 
 		{ 
-                         //echo 'in'; 
 			return 'n-a'; 
 		} 
 

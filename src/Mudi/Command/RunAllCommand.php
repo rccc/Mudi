@@ -44,7 +44,7 @@ class RunAllCommand extends MudiCommand
 
 		if(!is_dir($input_dir) || !is_dir($output_dir))
 		{
-			throw new Exception('Vérifier le chemin des dossiers en paramètres');
+			throw new \Exception('Vérifier le chemin des dossiers en paramètres');
 		}
 
 		$finder = new Finder();        
@@ -52,7 +52,7 @@ class RunAllCommand extends MudiCommand
 
 		if(empty($finder))
 		{
-			throw new Exception('Aucune archive trouvée');			
+			throw new \Exception('Aucune archive trouvée');			
 		}
 
 		//process queue
@@ -70,7 +70,7 @@ class RunAllCommand extends MudiCommand
 			$new_path = $output_dir .DS . $archive_name;
 			if(!file_exists($new_path) && !mkdir($new_path))
 			{
-				throw new Exception("Impossible d'écrire dans le dossier de sortie");
+				throw new \Exception("Impossible d'écrire dans le dossier de sortie");
 			}
 
 			//commande
