@@ -42,32 +42,42 @@ class RunAllCommand extends MudiCommand
 		$input_dir = $input->getArgument('input_dir');
 		$output_dir = $input->getArgument("output_dir"); 
 
-		if(!is_dir($input_dir) || !is_dir($output_dir))
+		if(!is_readable($input_dir) || !is_readable($output_dir))
 		{
 			throw new \Exception('Vérifier le chemin des dossiers en paramètres');
 		}
 
+		//recherche "zip"
 		$finder = new Finder();        
 		$finder->files()->in($input_dir)->name('*.zip');
 
-		if(empty($finder))
+		foreach ($finder as $file) {
+
+			$output->writeln( $file->getFileName());
+		}
+
+		if(count($finder) === 0)
 		{
-			throw new \Exception('Aucune archive trouvée');			
+			throw new \Exception( sprintf('%s : Aucune archive de type "zip" trouvée', $input_dir) );			
 		}
 
 		//process queue
 		$manager = new ProcessManager();
+		$manager->setMaxParallelProcesses(2);
+
 		$processList = array();
 
 		foreach ($finder as $file) {
 
 			$output->writeln('Executing test for ' . $file->getFileName());
 
-			//on récupère juste le nom
-			$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
+			$slug = \Mudi\Resource::slugify($file->getFileName());
+
+			//on récupère juste le nom sans l'extension ( basename )
+			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$new_path = $output_dir .DS . $archive_name;
+			$new_path = $output_dir .DS . $slug;
 			if(!file_exists($new_path) && !mkdir($new_path))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");

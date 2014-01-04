@@ -2,7 +2,6 @@
 
 namespace Mudi\ProxyService;
 
-//@todo:ne devait se trouver que dans la class '\Mudi\Resource'
 use Symfony\Component\Finder\Finder;
 use Neutron\TemporaryFilesystem\TemporaryFilesystem;
 

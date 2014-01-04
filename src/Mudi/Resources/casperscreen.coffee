@@ -9,9 +9,11 @@ viewportSizes = [
     #[1440,900]
 ]
 
+casper.echo casper.cli.args
+
 url 	= casper.cli.args[0];
 output_dir 	= casper.cli.args[1]; 
-filename = casper.cli.args[0].split('/').pop()
+filename = casper.cli.args[0].split('/').pop().replace(' ', '_')
 
 casper.start()
 
@@ -22,7 +24,7 @@ casper.each viewportSizes, (self, size, i) ->
 
 	@open(url).then  ->
 		path = "#{output_dir}/screenshot-#{filename}-#{w}x#{h}.png"
-		@echo path
+		@echo 'this is the path... ' +  path
 		@captureSelector path, 'html'
 
 casper.run ->

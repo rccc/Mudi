@@ -25,7 +25,8 @@ class TidyMarkupValidatorService extends BaseValidatorService
             'break-before-br'       => false,
             'char-encoding'         => 'utf8',
             'input-encoding'        => 'utf8',
-            'output-encoding'       => 'utf8'
+            'output-encoding'       => 'utf8',
+            'input-xml'				=> 0
     	);
 
 		$tidy = new \Tidy;

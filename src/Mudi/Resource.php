@@ -32,10 +32,8 @@ class Resource
 		$this->ext = substr(strrchr($this->name, '.'), 1);
 		$this->path = $this->getPathFromName();
 
-		$this->name = $this->slugify( pathinfo($name)['basename'] );
+		$this->name = self::slugify( pathinfo($name)['basename'] );
 		
-		var_dump('SLUG', $this->name);
-
 		if(is_file($this->path))
 		{
 			$this->isFile = true;
@@ -49,13 +47,13 @@ class Resource
 			{
 				case 'htm':
 				case 'html':
-					$this->isHtml = true;
-					break;
+				$this->isHtml = true;
+				break;
 				case 'zip':
-					$this->isArchive = true;
-					$this->isZip = true;
-					$this->extractArchive();
-					break;
+				$this->isArchive = true;
+				$this->isZip = true;
+				$this->extractArchive();
+				break;
 
 			}
 
@@ -112,16 +110,16 @@ class Resource
 			$zip->extractTo($this->archive_path);
 			$zip->close();
 		}
+
 	}
 
-	public function slugify($text) 
+	public static function slugify($text) 
 	{ 
 		$text = preg_replace('~[^\\pL\d]+~u', '-', $text); 
 		$text = trim($text, '-'); 
 		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text); 
 		$text = strtolower($text); 
 		$text = preg_replace('~[^-\w]+~', '', $text); 
-		echo $text; 
 		if (empty($text)) 
 		{ 
 			return 'n-a'; 
@@ -130,4 +128,23 @@ class Resource
 		return $text; 
 	} 
 
+	public function __destruct()
+	{
+		if(!empty($this->archive_path))
+		{
+			$this->delete_archive();
+		}
+	}
+
+	protected function delete_archive($file = "") { 
+
+		$files = glob( $this->archive_path . '/*', GLOB_MARK ); 
+		foreach( $files as $file ){ 
+			if( substr( $file, -1 ) == '/' ) 
+				self::delete_archive( $file ); 
+			else 
+				unlink( $file ); 
+		} 
+		rmdir( $this->archive_path ); 
+	}
 }
