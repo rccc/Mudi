@@ -3,11 +3,10 @@
 		<h2>Résultats validation HTML</h2>
 	</div>
 	<div class="panel-body">
-		
 		{% for documentName, result in results %}
-			
+
 			<div class="panel {{ result.status == "Valid" ? 'panel-success' : 'panel-danger' }} result-item">
-				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#w3c-{{loop.index}}">
+				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#w3c-{{ loop.index }}">
 					
 					<span>{{ documentName }}</span>
 
@@ -19,11 +18,11 @@
 					
 					{% else %}
 
-						{% if result['warnings'] %}
-							<span class="label label-warning pull-right">{{result.warnings}}</span>
+						{% if result.warnings %}
+							<span class="label label-warning pull-right">{{ result.warnings }}</span>
 						{% endif %}
 
-						<span class="label label-danger pull-right">{{result.errors}} </span>
+						<span class="label label-danger pull-right">{{ result.errors }} </span>
 						
 					{% endif %}
 
@@ -31,13 +30,12 @@
 
 				{% if result.status != "Valid"  %}
 
-					<div id="w3c-{{loop.index}}" class="panel-body collapse">
+					<div id="w3c-{{ loop.index }}" class="panel-body collapse">
 
 							<h3>Messages : </h3>
 							{% if result.messages %}
 								{% for data in result.messages %}
-
-									<p class="well"><em>{{data.message}}</em></p>
+									<p class="well"><em> {{ data.message }} </em></p>
 
 								{% endfor %}
 							{% endif %}

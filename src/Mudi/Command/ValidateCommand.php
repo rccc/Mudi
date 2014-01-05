@@ -105,7 +105,6 @@ class ValidateCommand extends BaseValidateCommand
 	protected function HtmlOutput(OutputInterface $output)
 	{
 		$twig = $this->getApplication()->getService('twig');
-
 		print $twig->render('validation-w3c.html.twig', array('results'=> $this->results->all()));
 
         }
