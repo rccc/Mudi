@@ -21,7 +21,7 @@ $app = new Application;
 
 //twig as service
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => array(VIEW_PATH, VIEW_PATH . '/public'),
+    'twig.path' => array(VIEW_PATH, VIEW_PATH . '/public', VIEW_PATH . '/generator'),
     'twig.options' => array('autoescape' => false),
     'debug' => false
     ));
@@ -43,7 +43,8 @@ $commands = array(
     new \Mudi\Command\CasperjsCommand(),
     new \Mudi\Command\CasperjsScreenshotCommand(),
     new \Mudi\Command\RunCommand(),
-    new \Mudi\Command\RunAllCommand()
+    new \Mudi\Command\RunAllCommand(),
+    new \Mudi\Command\GenerateCommand()
     );
 
 foreach ($commands as $command) {

@@ -1,0 +1,17 @@
+<?php
+
+namespace Mudi\ProxyService;
+
+class {{ service_name}}ProxyService extends \Mudi\ProxyService\ProxyService
+{
+
+	public function __construct($name = "", \Mudi\Resource $resource = null)
+	{
+		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
+		$this->service 	 = new \Mudi\Service\{{ service_name }}Service(); 
+		$this->results   = new \Mudi\Collection\OutputCollection(); 
+		$this->method 	 = ''; 	   //service
+		$this->arg_type  = 'path'; //path ou content
+	}
+	
+}

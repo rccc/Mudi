@@ -132,7 +132,7 @@ class LinkCheckerService
 			$this->curl
 			->setSimultaneousLimit(10)
 			->setOptions($curl_options)
-			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
+			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) {
 				
 				$link  = $options['link'];
 				$error = $request->getResponseError();
