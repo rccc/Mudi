@@ -125,8 +125,8 @@ class RunAllCommand extends MudiCommand
 			}
 
 			$content = $twig->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
-			file_put_contents( $new_path . DS . 'resultats-' . $resource->name .'.html' , $content);
-
+			$result_path = sprintf('%s/resultats-%s.html', $new_path, $resource->name);
+			file_put_contents( $result_path , $content);
 
 			try{
 				$o_path = $new_path . DS . 'originaux';
@@ -136,8 +136,6 @@ class RunAllCommand extends MudiCommand
 				}
 				$cmd = sprintf('cp -R %s/* %s/ ', $resource->archive_path, $o_path);
 				shell_exec($cmd);
-
-				var_dump($cmd);
 
 			}
 			catch(\Exception $e)
