@@ -108,51 +108,5 @@ class ValidateCommand extends BaseValidateCommand
 
 		print $twig->render('validation-w3c.html.twig', array('results'=> $this->results->all()));
 
-			/*
-            $tmp = array();
-            $tmp[] = '<section class="command-section">';
-            $tmp[] = sprintf('<h2>%s</h2>', "Résultats validation w3c");
-            $tmp[] = '<div class="section-body">';
-
-			foreach($this->resource->results as $fileName => $result)
-			{
-                
-                $tmp[] = sprintf('<div class="resource-name label default">%s</div>', $fileName);
-
-                $tmp[] = '<div class="result">';            
-
-				if($result['status'] === "Valid")
-				{
-					$tmp[] = '<p><span class="label success">Valide</span></p>';
-					$tmp[] = sprintf('<p><span class="label info">Encodage détécté : %s </span><p>', $result['response_body']['source']['encoding']);
-
-				}
-				else
-				{
-					$tmp[] = '<p><span class="label error">Non valide</span></p>';
-
-                    $tmp[] = sprintf('<span class="label info">nombre erreurs : %s</span>', $result['errors']);                       
-
-                    if(!empty($result['warnings']))
-                    {
-                        $tmp[] = sprintf('<span class="label info">avertissements: %s</span>', $result['warnings']);                      
-                    }
-
-					foreach ($result['response_body']['messages'] as $value) {
-						$tmp[] = sprintf('<p><span class="label error">%s</span></p>', $value['message']);						
-					}
-				}
-
-                $tmp[] = '</div><!-- .result -->';
-
-			}
-			
-
-            $tmp[] = '</div>';
-            $tmp[] = '</section>';
-
-            echo implode(PHP_EOL, $tmp);
-
-            */
         }
     }

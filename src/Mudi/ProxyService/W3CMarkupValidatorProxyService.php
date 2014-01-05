@@ -8,9 +8,9 @@ class W3CMarkupValidatorProxyService extends \Mudi\ProxyService\ProxyService
 	protected $validator;
 	protected $results;
 
-	public function __construct($name)
+	public function __construct($name = "", \Mudi\Resource $resource = null)
 	{
-		$this->resource  = new \Mudi\Resource($name);
+		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
         $this->service   = new \Mudi\Service\Validator\W3CMarkupValidatorService(); 
         $this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'validate'; //service

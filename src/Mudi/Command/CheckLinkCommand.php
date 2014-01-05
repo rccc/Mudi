@@ -98,56 +98,6 @@ class CheckLinkCommand extends MudiCommand
 		$twig = $this->getApplication()->getService('twig');
 		
 		print $twig->render('check_link.html.twig', array('results' => $this->results->all(), 'errors' => array()));
-		
-		/*
-		$tmp = array();
-		$tmp[] = '<section class="command-section">';
-		$tmp[] = '<h2>Résultats vérification des liens</h2>';
-		$tmp[] = '<div class="section-body">';
 
-		if(!empty($this->resource->results))
-		{
-			$tmp[] = '<h3>Lien(s) Valide(s)</h3>';
-
-			foreach($this->resource->results as $fileName => $result)
-			{
-				$tmp[] = sprintf('<div class="resource-name label default">%s</div>', $fileName);
-
-				foreach($result as $link)
-				{
-
-					$tmp[] = '<div class="result">';            
-
-					if(!empty($link->error))
-					{
-						$tmp[] = sprintf('<p class="label error">%s </p>', $link->error);
-					}
-					elseif($link->exists)
-					{
-						$tmp[] = sprintf('<p class="label success">%s : OK</p>', $link->url);
-					}
-
-					$tmp[] = '</div><!-- .result -->';
-
-				}
-
-			}
-
-			if(!empty($this->resource->errors))
-			{
-				foreach($this->resource->errors as $error)
-				{
-					foreach($error as $key_error => $value_error)
-						$tmp[] = '<div class="result">';            
-					$tmp[] = sprintf('<p class="label error">%s : %s </p>',$key_error,$value_error);
-					$tmp[] = '</div><!-- .result -->';
-				}
-			}
-		}
-
-		$tmp[] = '</div>';
-		$tmp[] = '</section>';
-		echo implode(PHP_EOL, $tmp);
-		*/
 	}
 }

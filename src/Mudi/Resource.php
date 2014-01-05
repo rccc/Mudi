@@ -77,9 +77,8 @@ class Resource
 
 	public function getFiles($motif = '*.html')
 	{
-		if(empty($this->files[$motif]))
+		if(!isset($this->files[$motif]))
 		{	
-
 			if($this->isHtml)
 			{
 				$this->files[$motif][] = new \SplFileInfo($this->name);
@@ -87,8 +86,8 @@ class Resource
 			}
 			elseif($this->isArchive || $this->isDir)
 			{
-				$path = $this->isArchive ?  $this->archive_path : $this->path;
 
+				$path = $this->isArchive ?  $this->archive_path : $this->path;
 				$finder = new Finder();        
 				$finder->files()->in($path)->name($motif);
 
@@ -98,7 +97,6 @@ class Resource
 
 			}
 		}
-
 		return $this->files[$motif];
 	}
 
@@ -138,7 +136,7 @@ class Resource
 		}
 	}
 
-	protected function delete_archive($file = "") { 
+	public function delete_archive($file = "") { 
 
 		$fs = new Filesystem();
 		$fs->remove($this->archive_path);

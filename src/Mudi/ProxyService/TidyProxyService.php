@@ -5,9 +5,9 @@ namespace Mudi\ProxyService;
 class TidyProxyService extends \Mudi\ProxyService\ProxyService
 {
 
-	public function __construct($name)
+	public function __construct($name = "", \Mudi\Resource $resource = null)
 	{
-		$this->resource  = new \Mudi\Resource($name);
+		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
 		$this->service 	 = new \Mudi\Service\Validator\TidyMarkupValidatorService(); 
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'validateFile'; //service

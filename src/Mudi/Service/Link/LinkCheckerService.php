@@ -92,7 +92,6 @@ class LinkCheckerService
 
 				}else 
 				{
-				
 					//on prends le "resource->path" ( var/www/leaflet/index.html )
 					//on substitue la référence au fichier par la valeur de l'attribut
 					$chunks = explode('/', $resource_path);
@@ -100,7 +99,7 @@ class LinkCheckerService
 					$chunks[] = $url; //substr($url,1);
 					$target = implode('/', $chunks);
 
-					if(file_get_contents($target))
+					if(@file_get_contents($target))
 					{
 						$link->exists = true;
 					}		

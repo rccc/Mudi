@@ -39,6 +39,26 @@ class RunAllCommand extends MudiCommand
 
 		$output->writeln(sprintf('Executing %s ...', $this->getName()));
 
+		$services = array(
+			'validation Tidy'   		 => array(
+				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
+				'template' => 'tidy.html.twig'),
+			'validation W3C'			=> array(
+				'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
+				'template' => 'validation-w3c.html.twig'),
+			'Vérification des liens' 	=> array(
+				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
+				'template' => 'check_link.html.twig'),
+			'Stats balises utilisées' 	=> array(
+				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
+				'template' => 'tag_usage.html.twig'),
+			'Screenshot'				=> array(
+				'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
+				'template' => 'screenshot.html.twig',
+				'params'   => array('output_dir'))
+			)
+		;
+
 		$input_dir = $input->getArgument('input_dir');
 		$output_dir = $input->getArgument("output_dir"); 
 
@@ -47,50 +67,92 @@ class RunAllCommand extends MudiCommand
 			throw new \Exception('Vérifier le chemin des dossiers en paramètres');
 		}
 
+		$twig = $this->getApplication()->getService('twig');
+
 		//recherche "zip"
 		$finder = new Finder();        
 		$finder->files()->in($input_dir)->name('*.zip');
 
+/*
 		foreach ($finder as $file) {
 
 			$output->writeln( $file->getFileName());
 		}
-
+*/
 		if(count($finder) === 0)
 		{
 			throw new \Exception( sprintf('%s : Aucune archive de type "zip" trouvée', $input_dir) );			
 		}
 
 		//process queue
-		$manager = new ProcessManager();
-		$manager->setMaxParallelProcesses(1);
+		//$manager = new ProcessManager();
+		//$manager->setMaxParallelProcesses(1);
+		//$processList = array();
 
-		$processList = array();
 
 		foreach ($finder as $file) {
 
 			$output->writeln('Fichier en cours de traitement : ' . $file->getFileName());
 
-			//$slug = \Mudi\Resource::slugify($file->getFileName());
-
+			$array = array();
 			//on récupère juste le nom sans l'extension ( basename )
 			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$new_path = $output_dir .DS . $file->getFileName();
+			$new_path = $output_dir . $file->getFileName();
 			if(!file_exists($new_path) && !mkdir($new_path))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");
 			}
 
+			$resource = new \Mudi\Resource($file->getPathName());
 			//commande
-			$cmd = sprintf('php %sconsole.php run %s %s', BASE_PATH . DS, $file->getPathName(), $new_path);
-			$manager->add(new Process($cmd));
+			//$cmd = sprintf('php %sconsole.php run %s %s', BASE_PATH . DS, $file->getPathName(), $new_path);
+			//$manager->add(new Process($cmd));
+
+			foreach($services as $name => $data)
+			{
+				$output->writeln('Current Service : ' . $name);
+				if($name === "Screenshot")
+				{
+					$service = new $data['ProxyService']('', $new_path,  $resource );	
+				}
+				else{
+					$service = new $data['ProxyService']('', $resource );
+				}
+				$results  = $service->execute();
+				$array[] = $twig->render($data['template'], array('results' => $results->all() )); 
+			}
+
+			$content = $twig->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
+			file_put_contents( $new_path . DS . 'resultats-' . $resource->name .'.html' , $content);
+
+
+			try{
+				$o_path = $new_path . DS . 'originaux';
+				if(!is_dir($o_path))
+				{
+					mkdir($o_path);
+				}
+				$cmd = sprintf('cp -R %s/* %s/ ', $resource->archive_path, $o_path);
+				shell_exec($cmd);
+
+				var_dump($cmd);
+
+			}
+			catch(\Exception $e)
+			{
+				$output->writeln( sprintf('<error>%s</error>', $e->getMessage()) );
+			}
+
+			$resource->delete_archive();
+
+			print PHP_EOL;
 
 		}
 
-		$manager->run();
-
+		//$manager->run();
+		/*
 		foreach ($processList as $process) {
 			if (!$process->isSuccessful()) {
 				$output->writeln( sprintf("<error>%s</error>", $process->getErrorOutput() ) );
@@ -99,9 +161,12 @@ class RunAllCommand extends MudiCommand
 				echo $process->getOutput();
 			}
 		}
+		*/
+	
 
 		$output->writeln('<info>DONE</info>');
 
 	}
+
 
 }
