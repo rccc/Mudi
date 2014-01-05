@@ -10,17 +10,13 @@ class ScreenshotService
 	protected $filename;
 	protected $output_dir;
 
-	public function __construct($filename, $output_dir)
-	{
-		$this->filename =  $filename;
-		$this->output_dir = $output_dir;
-
-		
+	public function __construct()
+	{	
 	}
 
-	public function capture()
+	public function capture($filename, $output_dir)
 	{
-		$cmd = sprintf("casperjs %s/casperscreen.coffee '%s' %s", RESOURCES_PATH, $this->filename, $this->output_dir);
+		$cmd = sprintf("casperjs %s/casperscreen.coffee '%s' %s", RESOURCES_PATH, $filename, $output_dir);
 		
 		$process = new Process($cmd);
 		$process->setTimeout(3600);
@@ -31,6 +27,7 @@ class ScreenshotService
 		else{
 			$result = new \stdClass();
 			$result->message = basename($process->getOutput());
+			echo $result->message;
 			return $result;
 		}
 

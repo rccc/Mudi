@@ -38,19 +38,18 @@ class RunCommand extends MudiCommand
 		$outputDirectory = $input->getArgument("output"); 
 
 		$commands = array(
-			//'validation Tidy'           => array('validate:tidy' => array()),
-			//'validation W3C'			=> array('validate:w3c' => array()),
-			//'Vérification des liens' 	=> array('check-link'=> array()),
-			//'Stats balises utilisées' 	=> array('tag:stats' => array()),
+			'validation Tidy'           => array('validate:tidy' => array()),
+			'validation W3C'			=> array('validate:w3c' => array()),
+			'Vérification des liens' 	=> array('check-link'=> array()),
+			'Stats balises utilisées' 	=> array('tag:stats' => array()),
 			'Screenshot'				=> array('casperjs:screenshot' => array($outputDirectory))
-			
 			)
 		;
 
 		$tmp = array();
 		$processList = array();
 		$manager = new \Neutron\ProcessManager\ProcessManager();
-		$manager->setMaxParallelProcesses(2);
+		$manager->setMaxParallelProcesses(4);
 
 		foreach($commands as $commandName => $data)
 		{
@@ -58,9 +57,9 @@ class RunCommand extends MudiCommand
 			$command = key($data);
 			$args = $commands[$commandName][$command];
 
-			$cmd = sprintf('php %sconsole.php %s %s "%s" --output-html', BASE_PATH . DS, $command, $name, implode(' ', $args));
+			$cmd = sprintf('php %sconsole.php %s %s %s --output-html', BASE_PATH . DS, $command, $name, implode(' ', $args));
 
-			$output->writeln($cmd);
+			$output->writeln("commande : " . $cmd);
 
 			$processList[$i] = new Process($cmd);
 

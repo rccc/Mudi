@@ -4,6 +4,8 @@ namespace Mudi;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Neutron\TemporaryFilesystem\TemporaryFilesystem;
 
 /**
@@ -138,13 +140,8 @@ class Resource
 
 	protected function delete_archive($file = "") { 
 
-		$files = glob( $this->archive_path . '/*', GLOB_MARK ); 
-		foreach( $files as $file ){ 
-			if( substr( $file, -1 ) == '/' ) 
-				self::delete_archive( $file ); 
-			else 
-				unlink( $file ); 
-		} 
-		rmdir( $this->archive_path ); 
+		$fs = new Filesystem();
+		$fs->remove($this->archive_path);
+
 	}
 }

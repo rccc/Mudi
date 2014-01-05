@@ -42,7 +42,7 @@ class RunAllCommand extends MudiCommand
 		$input_dir = $input->getArgument('input_dir');
 		$output_dir = $input->getArgument("output_dir"); 
 
-		if(!is_readable($input_dir) || !is_readable($output_dir))
+		if(!is_dir($input_dir) || !is_dir($output_dir))
 		{
 			throw new \Exception('Vérifier le chemin des dossiers en paramètres');
 		}
@@ -63,21 +63,21 @@ class RunAllCommand extends MudiCommand
 
 		//process queue
 		$manager = new ProcessManager();
-		$manager->setMaxParallelProcesses(2);
+		$manager->setMaxParallelProcesses(1);
 
 		$processList = array();
 
 		foreach ($finder as $file) {
 
-			$output->writeln('Executing test for ' . $file->getFileName());
+			$output->writeln('Fichier en cours de traitement : ' . $file->getFileName());
 
-			$slug = \Mudi\Resource::slugify($file->getFileName());
+			//$slug = \Mudi\Resource::slugify($file->getFileName());
 
 			//on récupère juste le nom sans l'extension ( basename )
 			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$new_path = $output_dir .DS . $slug;
+			$new_path = $output_dir .DS . $file->getFileName();
 			if(!file_exists($new_path) && !mkdir($new_path))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");

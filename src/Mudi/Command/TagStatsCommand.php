@@ -64,11 +64,10 @@ class tagStatsCommand extends MudiCommand
 			{
 				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
 			}
-			print implode(PHP_EOL, $tmp);
-			print PHP_EOL;
+			print implode(PHP_EOL, $tmp) . PHP_EOL;
 		}
 
-
+		$output->writeln( sprintf('<info>%s DONE</info>', $this->getName()) );
 	}
 
 	protected function HtmlOutput(OutputInterface $output)
