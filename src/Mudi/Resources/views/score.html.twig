@@ -1,0 +1,26 @@
+<section class="panel panel-default  result-section">
+	<header class="panel-heading">
+		<h2>Score</h2>
+	</header>
+	<div class="panel-body">
+		
+		<div class="panel result-item">
+			<div class="panel-heading">
+				{{resource_name}} : {{ score }}
+			</div>
+			<div class="panel-body">
+				{% if messages %}
+					<ul>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			</div> <!-- .panel-body -->
+		</div><!-- .result-item -->	
+
+	</div> <!-- .bd -->
+</section>
+
+
+

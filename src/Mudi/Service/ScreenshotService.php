@@ -12,6 +12,7 @@ class ScreenshotService
 
 	public function __construct()
 	{	
+		$this->name = 'screenshot';
 	}
 
 	public function capture($filename, $output_dir)

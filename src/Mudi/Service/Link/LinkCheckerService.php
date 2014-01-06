@@ -13,6 +13,7 @@ class LinkCheckerService
 
 	public function __construct()
 	{
+		$this->name = 'link_checker';
 	}
 
 	public function check($arg)
@@ -132,7 +133,7 @@ class LinkCheckerService
 			$this->curl
 			->setSimultaneousLimit(10)
 			->setOptions($curl_options)
-			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) {
+			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl, $options) {
 				
 				$link  = $options['link'];
 				$error = $request->getResponseError();

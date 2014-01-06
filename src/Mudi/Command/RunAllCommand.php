@@ -40,10 +40,10 @@ class RunAllCommand extends MudiCommand
 		$output->writeln(sprintf('Executing %s ...', $this->getName()));
 
 		$services = array(
-			'validation Tidy'   		 => array(
+			'Validation Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
-			'validation W3C'			=> array(
+			'Validation W3C'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
 				'template' => 'validation-w3c.html.twig'),
 			'Vérification des liens' 	=> array(
@@ -68,27 +68,17 @@ class RunAllCommand extends MudiCommand
 		}
 
 		$twig = $this->getApplication()->getService('twig');
+		$dispatcher = $this->getApplication()->getService('dispatcher');
 
 		//recherche "zip"
 		$finder = new Finder();        
 		$finder->files()->in($input_dir)->name('*.zip');
 
-/*
-		foreach ($finder as $file) {
 
-			$output->writeln( $file->getFileName());
-		}
-*/
 		if(count($finder) === 0)
 		{
 			throw new \Exception( sprintf('%s : Aucune archive de type "zip" trouvée', $input_dir) );			
 		}
-
-		//process queue
-		//$manager = new ProcessManager();
-		//$manager->setMaxParallelProcesses(1);
-		//$processList = array();
-
 
 		foreach ($finder as $file) {
 
@@ -106,28 +96,45 @@ class RunAllCommand extends MudiCommand
 			}
 
 			$resource = new \Mudi\Resource($file->getPathName());
-			//commande
-			//$cmd = sprintf('php %sconsole.php run %s %s', BASE_PATH . DS, $file->getPathName(), $new_path);
-			//$manager->add(new Process($cmd));
 
-			foreach($services as $name => $data)
+			foreach($services as $service_name => $data)
 			{
-				$output->writeln('Current Service : ' . $name);
-				if($name === "Screenshot")
+				$output->writeln('Current Service : ' . $service_name);
+				if($service_name === "Screenshot")
 				{
-					$service = new $data['ProxyService']('', $new_path,  $resource );	
+					$proxy = new $data['ProxyService']('', $new_path,  $resource );	
 				}
 				else{
-					$service = new $data['ProxyService']('', $resource );
+					$proxy = new $data['ProxyService']('', $resource );
 				}
-				$results  = $service->execute();
+				$results  = $proxy->execute();
 				$array[] = $twig->render($data['template'], array('results' => $results->all() )); 
+
+				$dispatcher->dispatch('service.done', new \Mudi\Event($proxy));
+
 			}
 
+			//score
+			$score = \Mudi\Registry::get($resource->name . '_score');
+			$scoring_messages = \Mudi\Registry::get($resource->name . '_scoring_messages');
+
+			\Mudi\Registry::del($resource->name . '_score');
+			\Mudi\Registry::del($resource->name . '_scoring_message');
+
+			$score_tpl = $twig->render('score.html.twig', array(
+				'score' => $score, 
+				'messages' => $scoring_messages,
+				'resource_name' => $resource->name
+				)
+			);
+			array_unshift($array, $score_tpl);
+
+			//resultats.html
 			$content = $twig->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
 			$result_path = sprintf('%s/resultats-%s.html', $new_path, $resource->name);
 			file_put_contents( $result_path , $content);
 
+			//copy originals files
 			try{
 				$o_path = $new_path . DS . 'originaux';
 				if(!is_dir($o_path))
@@ -146,21 +153,7 @@ class RunAllCommand extends MudiCommand
 			$resource->delete_archive();
 
 			print PHP_EOL;
-
 		}
-
-		//$manager->run();
-		/*
-		foreach ($processList as $process) {
-			if (!$process->isSuccessful()) {
-				$output->writeln( sprintf("<error>%s</error>", $process->getErrorOutput() ) );
-			}
-			else{
-				echo $process->getOutput();
-			}
-		}
-		*/
-	
 
 		$output->writeln('<info>DONE</info>');
 

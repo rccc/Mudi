@@ -14,6 +14,7 @@ define('TEST_PATH', BASE_PATH . DS . 'tests');
 
 use Cilex\Provider\Console\Adapter\Silex\ConsoleServiceProvider;
 use Silex\Application;
+use Symfony\Component\EventDispatcher\Event;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -50,5 +51,7 @@ $commands = array(
 foreach ($commands as $command) {
     $app['console']->add($command);
 }
+
+$app['dispatcher']->addSubscriber( new \Mudi\ScoringSubscriber() );
 
 $app['console']->run();

@@ -18,11 +18,16 @@
 					{% endfor %}
 				{% endif %}
 			 	{% for link in result.urls %}
-					{% if link.error %}
-						<li><span class="label label-danger">{{ link.error }}</span></li>
-
-					{% elseif link.exists %}
+	
+					{% if link.exists %}
 						<li><span class="label label-success">{{ link.url }} : OK</span></li>
+					{% else %}
+						<li>
+							<span class="label label-danger">{{ link.url }} : KO</span>
+							{% if link.error %}
+								<span class="label label-danger">{{ link.error }}</span>
+							{% endif %}
+						</li>
 					{% endif %}
 
 			 	{%  endfor %}

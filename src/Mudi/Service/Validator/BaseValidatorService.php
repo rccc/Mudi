@@ -2,7 +2,7 @@
 
 namespace Mudi\Service\Validator;
 
-class BaseValidatorService
+class BaseValidatorService 
 {
 
 	/**

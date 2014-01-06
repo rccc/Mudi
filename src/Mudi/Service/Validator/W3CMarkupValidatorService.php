@@ -9,6 +9,7 @@ class W3CMarkupValidatorService extends BaseValidatorService
 
 	public function __construct()
 	{
+		$this->name = 'w3c_markup_validator';
 	}
 
 	public function validate($file)

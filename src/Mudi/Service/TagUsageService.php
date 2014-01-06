@@ -2,14 +2,12 @@
 
 namespace Mudi\Service;
 
-class TagUsageService
+class TagUsageService 
 {
-
-	protected $results;
-
 	public function __construct()
 	{
 		$this->results = array();
+		$this->name = "tag_usage";
 	}
 
 	public function getStats($path)

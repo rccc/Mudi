@@ -53,4 +53,20 @@ class ProxyService
 
 		return $this->results;		
 	}
+
+	public function getService()
+	{
+		return $this->service;
+	}
+
+	public function getResource()
+	{
+		return $this->resource;
+	}
+
+	public function getResults()
+	{
+		return $this->results->all();
+	}
+
 }

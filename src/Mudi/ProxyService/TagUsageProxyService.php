@@ -4,7 +4,6 @@ namespace Mudi\ProxyService;
 
 class TagUsageProxyService extends \Mudi\ProxyService\ProxyService
 {
-
 	public function __construct($name = "", \Mudi\Resource $resource = null)
 	{
 		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
