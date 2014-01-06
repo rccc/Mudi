@@ -19,9 +19,15 @@ class TidyMarkupValidatorService extends BaseValidatorService
 		$result->errors = array();
 		$result->count_errors = 0;
 
+		//validation html5
 		$process = new Process(sprintf('tidy -eq "%s"', $path));
 		$process->run();
 		$errors = $this->getErrorMessages($process->getErrorOutput());
+
+		//validation xml 
+		$process = new Process(sprintf('tidy -xml -q "%s"', $path));
+		$process->run();
+		$errors = array_merge( $this->getErrorMessages($process->getErrorOutput()), $errors);
 
 		if(!empty($errors))
 		{

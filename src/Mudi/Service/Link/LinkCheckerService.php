@@ -50,13 +50,15 @@ class LinkCheckerService
 
 	public function checkUrls(Array $urls, $resource_path)
 	{
-		$array = array();
+		$total = 0;
+		$broken = 0;
 
 		foreach($urls as $url)
 		{			
 
 			$link = new \Mudi\Service\Link\Link();
 			$link->raw_url = $url;
+
 
 			//empty href attribute ?
 			if(empty($url)){
@@ -109,9 +111,14 @@ class LinkCheckerService
 			}
 
 			$link->url = $url;
-			$this->results->urls[$url] = $link;									
+			$this->results->urls[$url] = $link;		
+		
+			if(false === $link->exists) $broken++;
+			$total++;							
 		}//foreach
 
+		$this->results->count_link = $total;
+		$this->results->broken = $broken;
 		return $this->results;
 	}
 

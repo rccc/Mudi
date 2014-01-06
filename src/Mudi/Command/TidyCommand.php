@@ -92,7 +92,6 @@ class TidyCommand extends MudiCommand
 
 				$output->writeln(sprintf("statut : %s", $result->status));
 				$output->writeln(sprintf("erreurs : %s", $result->count_errors));
-				$output->writeln(sprintf("avertissements : %s", $result->count_warnings));
 				$output->writeln(sprintf("accessibilité : %s", $result->count_errors));
 
 			}

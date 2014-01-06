@@ -5,9 +5,10 @@
 	<div class="panel-body">
 		{% for documentName, result in results %}
 
-			<div class="panel {{ result.status == 0 ? 'panel-success' : result.status == 2 ? 'panel-warning' : 'panel-info' }} result-item">
+			<div class="panel {{ result.status == 0 ? 'panel-success' : result.status == 2 ? 'panel-danger' : 'panel-info' }} result-item">
 				<div class="panel-heading" data-toggle="collapse" data-target="#tidy-{{loop.index}}">
 					{{documentName}}
+					<span class="label label-danger pull-right">{{ result.count_errors }} </span>
 				</div>
 				<div id="tidy-{{loop.index}}" class="panel-body collapse">
 					

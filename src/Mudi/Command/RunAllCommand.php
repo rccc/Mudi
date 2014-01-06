@@ -109,7 +109,6 @@ class RunAllCommand extends MudiCommand
 				}
 				$results  = $proxy->execute();
 				$array[] = $twig->render($data['template'], array('results' => $results->all() )); 
-
 				$dispatcher->dispatch('service.done', new \Mudi\Event($proxy));
 
 			}
@@ -153,6 +152,7 @@ class RunAllCommand extends MudiCommand
 			$resource->delete_archive();
 
 			print PHP_EOL;
+			//die('ici');
 		}
 
 		$output->writeln('<info>DONE</info>');
