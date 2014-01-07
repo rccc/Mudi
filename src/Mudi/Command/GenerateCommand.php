@@ -75,7 +75,7 @@ class GenerateCommand extends MudiCommand
 			file_put_contents($proxy_path, $content);		
 			
 			//creation twig template
-			file_put_contents($proxy_path, $content);	
+			file_put_contents($proxy_path, '');	
 
 			//creation commande
 			$this->generateCommand($name, $output, true);

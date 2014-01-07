@@ -6,8 +6,17 @@ class TagUsageService
 {
 	public function __construct()
 	{
-		$this->results = array();
+
+		$this->result = new \Mudi\Result\TagUsageResult();
 		$this->name = "tag_usage";
+	}
+
+	public function getUsage($path)
+	{
+		$this->getStats($path);
+		$this->result->count_media 		= $this->countMedia();
+		$this->result->count_semantic 	= $this->countSemantic();
+		return $this->result;
 	}
 
 	public function getStats($path)
@@ -15,7 +24,6 @@ class TagUsageService
 		libxml_use_internal_errors(true);
 
 		$doc = new \DOMDocument();
-		$result = new \stdClass();
 
 		if(!$doc->loadHTMLFile($path))
 		{
@@ -47,11 +55,26 @@ class TagUsageService
 				}
 			}
 
-			$result->stats =  $count_list;
-
 		}
 
-		return $result;
+		$this->result->stats = $count_list;
+		return $this->result;
 
+	}
+
+	protected function countMedia()
+	{
+
+		$medias = array('audio', 'video', 'source', 'embed', 'track');
+
+		return array_intersect( array_keys($this->result->stats), $medias);
+	}
+
+
+	protected function countSemantic()
+	{
+		$semantics = array('article','aside', 'bdi', 'command', 'details', 'dialog', 'figure', 'figcaption', 'footer', 'header', 'mark', 'meter', 'nav', 'ruby', 'rt', 'rp', 'section', 'time', 'wbr');
+			
+		return  array_intersect( array_keys($this->result->stats), $semantics);
 	}
 }

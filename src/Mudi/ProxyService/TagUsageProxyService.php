@@ -9,7 +9,7 @@ class TagUsageProxyService extends \Mudi\ProxyService\ProxyService
 		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
 		$this->service 	 = new \Mudi\Service\TagUsageService(); 
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
-		$this->method 	 = 'getStats'; //service
+		$this->method 	 = 'getUsage'; //service
 		$this->arg_type  = 'path'; //path ou content
 	}
 	

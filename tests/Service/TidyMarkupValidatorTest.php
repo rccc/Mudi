@@ -27,8 +27,8 @@ class TidyMarkupValidatorTest extends \PHPUnit_Framework_TestCase
 		$validator = new TidyMarkupValidatorService();
 		//$file = file_get_contents(RESOURCES_PATH . 'valid-no-link.html');
 		$result = $validator->validateFile(RESOURCES_PATH . 'valid-no-link.html');
-
-		$this->assertTrue($result->status === 1);
+		var_dump($result->status);
+		$this->assertTrue($result->status === 2);
 	}
 
 }
