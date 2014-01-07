@@ -11,10 +11,6 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	public function testEmptyDoc()
-	{
-	}
-
 	public function testGetStats()
 	{
 		$file_path 	=  RESOURCES_PATH . 'demo.html';
@@ -25,16 +21,6 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue( count($result->stats) > 0 );
 
 	}
-
-
-	public function testCountMedias()
-	{			
-	}
-
-	public function testCountSemantics()
-	{
-	}
-
 
 	public function testgetUsage()
 	{

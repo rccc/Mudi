@@ -14,8 +14,9 @@ class TagUsageService
 	public function getUsage($path)
 	{
 		$this->getStats($path);
-		$this->result->count_media 		= $this->countMedia();
-		$this->result->count_semantic 	= $this->countSemantic();
+		$this->result->medias			= $this->getMedias();
+		$this->result->common_semantics = $this->getCommonSemantics();
+		$this->result->headings 		= $this->getHeadings();
 		return $this->result;
 	}
 
@@ -56,25 +57,39 @@ class TagUsageService
 			}
 
 		}
-
+		ksort($count_list);
 		$this->result->stats = $count_list;
 		return $this->result;
 
 	}
 
-	protected function countMedia()
+	protected function getMedias()
 	{
-
 		$medias = array('audio', 'video', 'source', 'embed', 'track');
 
-		return array_intersect( array_keys($this->result->stats), $medias);
+		return array_values( array_intersect( array_keys($this->result->stats), $medias) );
 	}
 
 
-	protected function countSemantic()
+	protected function getSemantics()
 	{
 		$semantics = array('article','aside', 'bdi', 'command', 'details', 'dialog', 'figure', 'figcaption', 'footer', 'header', 'mark', 'meter', 'nav', 'ruby', 'rt', 'rp', 'section', 'time', 'wbr');
 			
 		return  array_intersect( array_keys($this->result->stats), $semantics);
+	}
+
+	protected function getCommonSemantics()
+	{
+		$semantics = array('article','aside', 'footer', 'header',  'nav', 'section');
+			
+		return  array_values( array_intersect( array_keys($this->result->stats), $semantics) );
+	}
+
+
+
+	protected function getHeadings()
+	{
+		$headings = array('h1','h2', 'h3', 'h4', 'h5', 'h6', 'hgroup');
+		return  array_values( array_intersect( array_keys($this->result->stats), $headings) );
 	}
 }

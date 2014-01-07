@@ -6,13 +6,17 @@ class TagUsageResult extends \Mudi\Result\MudiResult
 {
 
 	public $stats;
-	public $count_medias;
-	public $count_semantics;
+	public $medias;
+	public $semantics;
+	public $common_semantics;
+	public $headings;
 
 	public function __construct()
 	{
 		$this->stats 			= array();
-		$this->count_medias 	= 0;
-		$this->count_semantics 	= 0;
+		$this->medias 			= array();
+		$this->semantics 		= array();
+		$this->common_semantics = array();
+		$this->headings 		= array();
 	}
 }

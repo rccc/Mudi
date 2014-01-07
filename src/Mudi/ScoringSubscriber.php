@@ -31,26 +31,31 @@ class ScoringSubscriber implements EventSubscriberInterface
 	protected function link_checker_scoring($service_name, $resource_name, $results)
 	{
 		//var_dump('link_checker_scoring');
-
+		$broken = 0;
+		$nb_doc = 0;
+		$value  = 0;
+		
 		foreach($results as $document_name => $result)
 		{
-			$i = 0;
-
 			if(!empty($result->urls))
 			{
 				foreach($result->urls as $url => $link)
 				{	
 					if(false === $link->exists)
 					{	
-						$i++;
+						$broken++;
+						$value += 0.5;
 					}
 				}
-				if($i > 0)
-				{
-					$this->decrementScore($resource_name, 1);
-					$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d lien(s) cassé(s) (%d)", $i, 1));
-				}
 			}
+			$nb_doc++;
+		}
+
+		if($broken > 0)
+		{	
+			$value = round($value / $nb_doc);
+			$this->decrementScore($resource_name, $value);
+			$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d lien(s) cassé(s) dans (%d) documents", $broken, $nb_doc));
 		}
 	}
 
@@ -81,41 +86,89 @@ class ScoringSubscriber implements EventSubscriberInterface
 	{
 		//var_dump("tidy_validator_scoring");
 
-		$n = 0;
+		$nb_doc 	= 0;
+		$invalid 	= 0;
+		$value 		= 0;
+
 		foreach($results as $document_name => $result)
 		{	
-			if($result->count_errors > 0) $n++;
+			static $nb_doc = 0;
+			if($result->count_errors > 0) $invalid++;
 
 			if($result->count_errors > 3)
 			{
-				$value = 3;
+				$value += 3;
 			}
 			elseif($result->count_errors > 0 && $result->count_errors <= 3)
 			{
-				static $i = 0;
-				$this->decrementScore($resource_name, $result->count_errors);
-				$i++;
+				$value += $result->count_errors;
 			}
+
+			$nb_doc++;
 		}
-		$this->addScoringMessage($resource_name, $service_name, $document_name, "$n document(s) non valide(s)");
+
+		$value = round($value/$nb_doc);
+		$this->decrementScore($resource_name, $value);
+		$this->addScoringMessage($resource_name, $service_name, $document_name, "$invalid document(s) non valide(s)");
 	}
 
 	protected function tag_usage_scoring($service_name, $resource_name, $results)
 	{
 		//var_dump('tag_usage_scoring');
 
-		$wanted_tags = array('header', 'footer', 'article', 'section','aside', 'nav', 'video', 'audio', 'canevas');
-		
+		$wanted_semantics = array('header', 'footer', 'article', 'section','nav');
+		$wanted_headings  = array('h1', 'h2', 'hgroup');
+
+		$value 	= 0; //valeur à déduire
+		$nb_doc = 0; 
+		$no_semantics= 0;
+		$no_headings = 0;
+		$with_style = 0;
+
 		foreach($results as $document_name => $result)
-		{
-			$tags = array_keys($result->stats);
-			$test = array_intersect($wanted_tags, $tags); 
-			if(empty($test))
+		{	
+			//diff_s retourne les balises sémantiques attendues qui ne sont pas présentes dans le document
+			$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
+			if(!empty($diff_s))
 			{
-				$this->decrementScore($resource_name, 1);
-				$this->addScoringMessage($resource_name, $service_name, $document_name, 'Aucune balise HTML5 (-1)');
+				//on retire un demi-point pour chaque balise non utilisée
+				$value += count($diff_s)* 0.5;
+				$no_semantics++;
 			}
+
+			//diff_h retourne les balises heading attendues qui ne sont pas présentes dans le document
+			$diff_h = array_diff($wanted_headings, $result->headings); 
+			if(!empty($diff_h))
+			{
+				//on retire un demi-point pour chaque balise non utilisée
+				$value += count($diff_h)* 0.5;
+				$no_headings++;
+			}
+
+			//test présence balise "style" - on retire 2 points
+			if(in_array('style', array_keys($result->stats)))
+			{
+				$this->decrementScore($resource_name, 2);
+				$with_style++;
+			}
+
+			$nb_doc++;
 		}
+
+
+		//on divise par le nombre de document
+		$value = round($value / $nb_doc);
+		$this->decrementScore($resource_name, $value);
+
+		if($no_semantics > 0)
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "$no_semantics document(s) avec balises sémantiques manquantes");
+		
+		if($no_headings > 0)
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "$no_headings document(s) avec balises d'en-tête manquantes");
+		
+		if($with_style > 0)		
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "$with_style document(s) avec balise(s) style détectée(s)");				
+
 	}
 
 	protected function decrementScore($resource_name, $value = 1)
