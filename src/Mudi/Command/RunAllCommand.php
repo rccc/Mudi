@@ -40,7 +40,7 @@ class RunAllCommand extends MudiCommand
 		$output->writeln(sprintf('Executing %s ...', $this->getName()));
 
 		$services = array(
-			/*'Validation Tidy'   		 => array(
+			'Validation Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
 			'Validation W3C'			=> array(
@@ -48,14 +48,14 @@ class RunAllCommand extends MudiCommand
 				'template' => 'validation-w3c.html.twig'),
 			'Vérification des liens' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
-				'template' => 'check_link.html.twig'),*/
+				'template' => 'check_link.html.twig'),
 			'Stats balises utilisées' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
-				'template' => 'tag_usage.html.twig'),/*
+				'template' => 'tag_usage.html.twig'),
 			'Screenshot'				=> array(
 				'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
 				'template' => 'screenshot.html.twig',
-				'params'   => array('output_dir'))*/
+				'params'   => array('output_dir'))
 			)
 		;
 
@@ -152,7 +152,6 @@ class RunAllCommand extends MudiCommand
 			$resource->delete_archive();
 
 			print PHP_EOL;
-			die('ici');
 		}
 
 		$output->writeln('<info>DONE</info>');
