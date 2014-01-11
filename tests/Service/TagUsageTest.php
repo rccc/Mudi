@@ -6,7 +6,8 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 {
 	public function testInit()
 	{	
-		$service = new TagUsageService();
+		$file_path 	=  RESOURCES_PATH . 'demo.html';
+		$service = new TagUsageService($file_path);
 		$this->assertTrue($service instanceof \Mudi\Service\TagUsageService);
 	}
 
@@ -14,8 +15,9 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 	public function testGetStats()
 	{
 		$file_path 	=  RESOURCES_PATH . 'demo.html';
-		$service 	= new TagUsageService();
-		$result  	= $service->getStats($file_path); 		
+
+		$service 	= new TagUsageService($file_path);
+		$result  	= $service->getStats(); 		
 
 		$this->assertTrue( !empty($result->stats) );
 		$this->assertTrue( count($result->stats) > 0 );
@@ -25,8 +27,9 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 	public function testgetUsage()
 	{
 		$file_path 	=  RESOURCES_PATH . 'demo.html';
-		$service 	= new TagUsageService();
-		$result  	= $service->getUsage($file_path); 
+
+		$service 	= new TagUsageService($file_path);
+		$result  	= $service->getUsage(); 
 
 		$this->assertTrue( $result instanceof \Mudi\Result\TagUsageResult );		
 		$this->assertTrue( count($result->stats) > 0 );

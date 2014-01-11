@@ -10,6 +10,7 @@ class TagUsageResult extends \Mudi\Result\MudiResult
 	public $semantics;
 	public $common_semantics;
 	public $headings;
+	public $style_attr;
 
 	public function __construct()
 	{
@@ -18,5 +19,6 @@ class TagUsageResult extends \Mudi\Result\MudiResult
 		$this->semantics 		= array();
 		$this->common_semantics = array();
 		$this->headings 		= array();
+		$this->style_attr 		= 0;
 	}
 }

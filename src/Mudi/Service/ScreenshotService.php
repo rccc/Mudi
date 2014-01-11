@@ -28,7 +28,7 @@ class ScreenshotService
 		else{
 			$result = new \stdClass();
 			$result->message = basename($process->getOutput());
-			echo $result->message;
+			//echo $result->message;
 			return $result;
 		}
 

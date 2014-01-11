@@ -4,61 +4,67 @@ namespace Mudi\Service;
 
 class TagUsageService 
 {
-	public function __construct()
-	{
 
-		$this->result = new \Mudi\Result\TagUsageResult();
-		$this->name = "tag_usage";
-	}
+	public $name;
+	public $result;
+	protected $doc;
+	protected $tagList;
 
-	public function getUsage($path)
-	{
-		$this->getStats($path);
-		$this->result->medias			= $this->getMedias();
-		$this->result->common_semantics = $this->getCommonSemantics();
-		$this->result->headings 		= $this->getHeadings();
-		return $this->result;
-	}
-
-	public function getStats($path)
+	public function __construct($file_path)
 	{
 		libxml_use_internal_errors(true);
 
-		$doc = new \DOMDocument();
+		$this->result = new \Mudi\Result\TagUsageResult();
+		$this->name = "tag_usage";
+		$this->doc = new \DOMDocument();
 
-		if(!$doc->loadHTMLFile($path))
+		if(!$this->doc->loadHTMLFile($file_path))
 		{
 			foreach (libxml_get_errors() as $error) {
-				$result->errors[] = $errors;
+				$this->result->errors[] = $errors;
 			}
 
 			libxml_clear_errors();
 		}
-		else
-		{
-			$tagList = $doc->getElementsByTagName('*');
-			if($tagList->length == 0)
+		else{
+			$this->tagList = $this->doc->getElementsByTagName('*');
+			if($this->tagList->length == 0)
 			{
-				$result->errors[] = "Aucun balises n'a été trouvée";
+				$this->result->errors[] = "Aucun balises n'a été trouvée";
+			}
+		}
+
+	}
+
+	public function getUsage()
+	{
+		$this->getStats();
+		$this->result->medias			= $this->getMedias();
+		$this->result->common_semantics = $this->getCommonSemantics();
+		$this->result->headings 		= $this->getHeadings();
+		$this->result->style_attr	 	= $this->countStyleAttr();
+
+		return $this->result;
+	}
+
+	public function getStats()
+	{
+
+		$count_list = array();
+		foreach($this->tagList as $tag)
+		{
+			$tagName = $tag->tagName;
+			if(in_array($tagName, array_keys($count_list))){
+				$count_list[$tagName]++;
 			}
 			else{
-
-				$count_list = array();
-				foreach($tagList as $tag)
-				{
-					$tagName = $tag->tagName;
-					if(in_array($tagName, array_keys($count_list))){
-						$count_list[$tagName]++;
-					}
-					else{
-						$count_list[$tagName] = 1;
-					}
-				}
+				$count_list[$tagName] = 1;
 			}
-
 		}
+
 		ksort($count_list);
 		$this->result->stats = $count_list;
+
 		return $this->result;
 
 	}
@@ -74,14 +80,14 @@ class TagUsageService
 	protected function getSemantics()
 	{
 		$semantics = array('article','aside', 'bdi', 'command', 'details', 'dialog', 'figure', 'figcaption', 'footer', 'header', 'mark', 'meter', 'nav', 'ruby', 'rt', 'rp', 'section', 'time', 'wbr');
-			
+
 		return  array_intersect( array_keys($this->result->stats), $semantics);
 	}
 
 	protected function getCommonSemantics()
 	{
 		$semantics = array('article','aside', 'footer', 'header',  'nav', 'section');
-			
+
 		return  array_values( array_intersect( array_keys($this->result->stats), $semantics) );
 	}
 
@@ -90,4 +96,17 @@ class TagUsageService
 		$headings = array('h1','h2', 'h3', 'h4', 'h5', 'h6', 'hgroup');
 		return  array_values( array_intersect( array_keys($this->result->stats), $headings) );
 	}
+
+	protected function countStyleAttr()
+	{
+		foreach($this->tagList as $tag)
+		{
+			$attr = $tag->getAttribute('style');
+
+			if(!empty($attr)){
+				$this->result->style_attr++;
+			}
+		}
+	}
+
 }
