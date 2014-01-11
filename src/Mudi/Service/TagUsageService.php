@@ -42,7 +42,7 @@ class TagUsageService
 		$this->result->medias			= $this->getMedias();
 		$this->result->common_semantics = $this->getCommonSemantics();
 		$this->result->headings 		= $this->getHeadings();
-		$this->result->style_attr	 	= $this->countStyleAttr();
+		$this->result->class_attr	 	= $this->countClassAttr();
 
 		return $this->result;
 	}
@@ -97,14 +97,14 @@ class TagUsageService
 		return  array_values( array_intersect( array_keys($this->result->stats), $headings) );
 	}
 
-	protected function countStyleAttr()
+	protected function countClassAttr()
 	{
 		foreach($this->tagList as $tag)
 		{
-			$attr = $tag->getAttribute('style');
+			$attr = $tag->getAttribute('class');
 
 			if(!empty($attr)){
-				$this->result->style_attr++;
+				$this->result->class_attr++;
 			}
 		}
 	}

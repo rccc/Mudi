@@ -152,6 +152,13 @@ class ScoringSubscriber implements EventSubscriberInterface
 				$with_style++;
 			}
 
+			//test si utilisation de l'attribut "class"
+			if($result->class_attr === 0)
+			{
+				$this->decrementScore($resource_name, 2);
+				$this->addScoringMessage($resource_name, $service_name, $document_name, "L'attribut \"class\" n'est pas utilisé");
+			}
+
 			$nb_doc++;
 		}
 
