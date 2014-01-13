@@ -62,7 +62,14 @@ class W3CMarkupValidatorService extends BaseValidatorService
 					$self->results->errors 		= $errors;
 					$self->results->warnings 	= $warnings;
 					$self->results->encoding  	= $body['source']['encoding'];
-					$self->results->messages  	= $body['messages'];
+
+					if(empty($body['messages']))
+					{
+						foreach($body['messages'] as $message)
+						{
+							$self->results->messages[]  	= $message;
+						}
+					}
 
 				}
 				else

@@ -6,14 +6,18 @@
 		{% for documentName, result in results %}
 
 			<div class="panel {{ result.status == "Valid" ? 'panel-success' : 'panel-danger' }} result-item">
-				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#w3c-{{ loop.index }}">
+				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#css-validator-{{ loop.index }}">
 					
 					<span>{{ documentName }}</span>
 
 					{% if result.status == "Valid" %}
+
+						{% if result.encoding %}
 						<span class="label label-info pull-right">
 							Encodage détecté : {{result.encoding}}
 						</span>
+						{% endif %}
+
 						<span class="label label-success pull-right">Valide</span>
 					
 					{% else %}
@@ -30,12 +34,13 @@
 
 				{% if result.status != "Valid"  %}
 
-					<div id="w3c-{{ loop.index }}" class="panel-body collapse">
+					<div id="css-validator-{{ loop.index }}" class="panel-body collapse">
 
 							<h3>Messages : </h3>
 							{% if result.messages %}
-								{% for data in result.messages %}
-									<p class="well"><em> {{ data.message }} </em></p>
+								{% for message in result.messages %}
+
+									<p class="well"><em> {{ message }} </em></p>
 
 								{% endfor %}
 							{% endif %}

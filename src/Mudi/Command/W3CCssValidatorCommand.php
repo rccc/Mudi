@@ -87,7 +87,7 @@ class W3ccssValidatorCommand extends MudiCommand
 	protected function HtmlOutput(OutputInterface $output)
 	{
 		$twig = $this->getApplication()->getService('twig');
-		echo $twig->render('css-validator.html.twig', array('results'=>$this->results->all()));
+		echo $twig->render('validation-w3c.html.twig', array('results'=>$this->results->all()));
 	}
 
 }

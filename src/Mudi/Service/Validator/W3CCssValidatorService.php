@@ -31,7 +31,7 @@ class W3CCssValidatorService extends BaseValidatorService
 
 		if(false === $response)
 		{
-			$this->result->errors[] = curl_error($ch);
+			$this->result->messages[] = curl_error($ch);
 			return $this->result;
 		}
 
@@ -52,7 +52,7 @@ class W3CCssValidatorService extends BaseValidatorService
 			{
 				foreach($errors as $error)
 				{
-					$this->result->errors[] = $error;
+					$this->result->messages[] = $error;
 				}
 			}
 

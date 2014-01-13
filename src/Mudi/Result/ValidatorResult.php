@@ -9,7 +9,7 @@ class ValidatorResult extends \Mudi\Result\MudiResult
 	public $isValid			= false;
 	public $error_count		= 0;
 	public $warning_count  	= 0;
-	public $errors   		= array();
+	public $messages   		= array();
 
 	public function __construct()
 	{
