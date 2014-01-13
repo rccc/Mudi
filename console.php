@@ -45,6 +45,7 @@ $commands = array(
     new \Mudi\Command\CasperjsScreenshotCommand(),
     new \Mudi\Command\RunCommand(),
     new \Mudi\Command\RunAllCommand(),
+    new \Mudi\Command\W3CCssValidatorCommand(),
     new \Mudi\Command\GenerateCommand()
     );
 

@@ -17,7 +17,7 @@ class ProxyService
 
 	public function execute()
 	{
-		if($this->resource->isHtml)
+		if($this->resource->isFile && !$this->resource->isArchive)
 		{
 			$arg = $this->arg_type === 'path' ? $this->resource->path : file_get_contents($this->resource->path);
 			$this->results->add($this->resource->name, call_user_func(array($this->service, $this->method), $arg));

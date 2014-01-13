@@ -52,33 +52,35 @@ class GenerateCommand extends MudiCommand
 
 		if($command = $input->getOption('command'))
 		{	
-			$this->generateCommand($name, $output);
+			$this->generateCommand($name, $input, $output);
 		}
 		elseif($service = $input->getOption('service'))
 		{
 			$service_path 	= MUDI_PATH . DS . 'Service' . DS . ucfirst($name) . 'Service.php';
 			$proxy_path		= MUDI_PATH . DS . 'ProxyService' . DS . ucfirst($name) . 'ProxyService.php';
 			$tpl_path		= MUDI_PATH . DS . 'views/' . DS . $name . '.html.twig.php';
+			$twig 			= $this->getApplication()->getService('twig');
 
-			if(file_exists($command_path))
+
+			if(file_exists($service_path))
 			{
 				$output->writeln('<error>un Service du même nom existe déjà<error>');
 				die('ABORT');
 			}
 
 			//creation classe service
-			$content = $twig->render('service.twig.php', array('service_name' => $name));
+			$content = $twig->render('service.php.twig', array('service_name' => $name));
 			file_put_contents($service_path, $content);		
 
 			//creation proxy service
-			$content = $twig->render('service_proxy.twig.php', array('service_name' => $name));
+			$content = $twig->render('service_proxy.php.twig', array('service_name' => $name));
 			file_put_contents($proxy_path, $content);		
 			
 			//creation twig template
 			file_put_contents($proxy_path, '');	
 
 			//creation commande
-			$this->generateCommand($name, $output, true);
+			$this->generateCommand($name, $input, $output, true);
 
 		}
 		else{
@@ -90,7 +92,7 @@ class GenerateCommand extends MudiCommand
 
 	}
 
-	private function generateCommand($name, $output, $with_proxy = false)
+	private function generateCommand($name, $input, $output, $with_proxy = false)
 	{
 		$twig = $this->getApplication()->getService('twig');
 

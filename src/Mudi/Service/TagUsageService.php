@@ -10,35 +10,43 @@ class TagUsageService
 	protected $doc;
 	protected $tagList;
 
-	public function __construct($file_path)
+	public function __construct()
 	{
-		libxml_use_internal_errors(true);
-
 		$this->result = new \Mudi\Result\TagUsageResult();
 		$this->name = "tag_usage";
 		$this->doc = new \DOMDocument();
 
-		if(!$this->doc->loadHTMLFile($file_path))
-		{
-			foreach (libxml_get_errors() as $error) {
-				$this->result->errors[] = $errors;
-			}
-
-			libxml_clear_errors();
-		}
-		else{
-			$this->tagList = $this->doc->getElementsByTagName('*');
-			if($this->tagList->length == 0)
-			{
-				$this->result->errors[] = "Aucun balises n'a été trouvée";
-			}
-		}
-
 	}
 
-	public function getUsage()
+	protected function parse_file($file_path)
 	{
-		$this->getStats();
+		libxml_use_internal_errors(true);
+
+		if(empty($this->tagList))
+		{
+			if(!$this->doc->loadHTMLFile($file_path))
+			{
+				foreach (libxml_get_errors() as $error) {
+					$this->result->errors[] = $errors;
+				}
+
+				libxml_clear_errors();
+			}
+			else{
+				$this->tagList = $this->doc->getElementsByTagName('*');
+				if($this->tagList->length == 0)
+				{
+					$this->result->errors[] = "Aucun balises n'a été trouvée";
+				}
+			}
+		}		
+	}
+
+	public function getUsage($file_path)
+	{
+		$this->parse_file($file_path);
+
+		$this->result->stats 			= $this->getStats($file_path);
 		$this->result->medias			= $this->getMedias();
 		$this->result->common_semantics = $this->getCommonSemantics();
 		$this->result->headings 		= $this->getHeadings();
@@ -47,8 +55,10 @@ class TagUsageService
 		return $this->result;
 	}
 
-	public function getStats()
+	protected function getStats($file_path)
 	{
+
+		$this->parse_file($file_path);
 
 		$count_list = array();
 		foreach($this->tagList as $tag)
@@ -63,9 +73,8 @@ class TagUsageService
 		}
 
 		ksort($count_list);
-		$this->result->stats = $count_list;
 
-		return $this->result;
+		return $count_list;
 
 	}
 

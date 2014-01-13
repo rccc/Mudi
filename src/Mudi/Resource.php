@@ -24,7 +24,7 @@ class Resource
 	public $name 		= "";
 	public $path 		= "";
 	public $archive_path = "";  //chemin du dossier temporaire contenant le contenu de l'archive
-	public $authorizedExtensions = array("htm","html", "zip");
+	public $authorizedExtensions = array("htm","html", "css", "zip");
 	public $files       = array(); // tableau contenant une liste de fichiers 
 
 
