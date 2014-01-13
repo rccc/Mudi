@@ -6,7 +6,7 @@
 		
 		{% for documentName, result in results %}
 
-			<div class="panel {{result.status == 0 ? 'panel-success' : result.status == 1 ? 'panel-warning' : 'panel-error' }} result-item">
+			<div class="panel result-item">
 				<div class="panel-heading" data-toggle="collapse" data-target="#tag-usage-{{loop.index}}">
 					{{documentName}}
 				</div>

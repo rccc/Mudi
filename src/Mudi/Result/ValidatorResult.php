@@ -10,6 +10,7 @@ class ValidatorResult extends \Mudi\Result\MudiResult
 	public $error_count		= 0;
 	public $warning_count  	= 0;
 	public $messages   		= array();
+	public $encoding 		= "";
 
 	public function __construct()
 	{

@@ -12,6 +12,8 @@ class LinkCheckerProxyService extends \Mudi\ProxyService\ProxyService
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'checkDocument'; //service:methode
 		$this->arg_type  = 'path'; //path ou content
+		$this->file_extension = '*.html';
+
 	}
 	
 }

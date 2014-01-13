@@ -11,6 +11,7 @@ class W3CCssValidatorProxyService extends \Mudi\ProxyService\ProxyService
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'validate'; //service
 		$this->arg_type  = 'content'; //path ou content
+		$this->file_extension = '*.css';
 	}
 	
 }

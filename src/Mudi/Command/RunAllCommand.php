@@ -43,9 +43,12 @@ class RunAllCommand extends MudiCommand
 			'Validation Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
-			'Validation W3C'			=> array(
+			'Validation HTML -W3C'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
 				'template' => 'validation-w3c.html.twig'),
+			'Validation CSS - W3C'			=> array(
+				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
+				'template' => 'validation-w3c-css.html.twig'),
 			'Vérification des liens' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
 				'template' => 'check_link.html.twig'),
@@ -108,6 +111,7 @@ class RunAllCommand extends MudiCommand
 					$proxy = new $data['ProxyService']('', $resource );
 				}
 				$results  = $proxy->execute();
+
 				$array[] = $twig->render($data['template'], array('results' => $results->all() )); 
 				$dispatcher->dispatch('service.done', new \Mudi\Event($proxy));
 

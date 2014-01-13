@@ -12,6 +12,8 @@ class TidyProxyService extends \Mudi\ProxyService\ProxyService
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'validateFile'; //service
 		$this->arg_type  = 'path'; //path ou content
+		$this->file_extension = '*.html';
+
 	}
 	
 }

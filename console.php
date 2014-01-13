@@ -24,7 +24,7 @@ $app = new Application;
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => array(VIEW_PATH, VIEW_PATH . '/public', VIEW_PATH . '/generator'),
     'twig.options' => array('autoescape' => false),
-    'debug' => false
+    'debug' => true
     ));
 
 

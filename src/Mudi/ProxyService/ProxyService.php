@@ -7,11 +7,10 @@ use Neutron\TemporaryFilesystem\TemporaryFilesystem;
 
 class ProxyService
 {
-
 	protected $resource;
 	protected $service;
 	protected $results;
-	protected $extension;
+	protected $file_extension;
 	protected $files;
 	protected $options;
 
@@ -41,10 +40,10 @@ class ProxyService
 			}
 
 			$finder = new Finder();        
-			$finder->files()->in($path)->name('*.html');
+			$finder->files()->in($path)->name($this->file_extension);
 
 			foreach ($finder as $file) 
-			{
+			{  var_dump($file->getFileName());
 				$arg = $this->arg_type === 'path' ? $file->getRealpath() : $file->getContents();
 				$this->results->add( $file->getFileName(), call_user_func(array($this->service, $this->method), $arg) );
 			}  

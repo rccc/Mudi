@@ -16,12 +16,12 @@
 						<span class="label label-danger pull-right">{{ result.broken }} </span>
 					{% endif %}
 
-					<span class="label label-info pull-right">{{ result.count_link }} </span>
+					<span class="label label-info pull-right">{{ result.link_count }} </span>
 
 				</div>
 				<div id="check-link-{{loop.index}}" class="panel-body collapse in">
 				<ul>
-				{% if result.errors %}
+				{% if result.errors is defined %}
 					{% for error in result.errors %}
 						<li><span class="label label-danger">{{ error }}</span></li>
 					{% endfor %}
@@ -46,7 +46,7 @@
 			
 		{% endfor %}
 	{% endif %}
-	{% if errors %}
+	{% if errors is defined and errors is not empty  %}
 
 		<div class="panel panel-danger result-item">
 			<div class="panel-heading" data-toggle="collapse" data-target="#check-link-errors">Erreur(s)</div>

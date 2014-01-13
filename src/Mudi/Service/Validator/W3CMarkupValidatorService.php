@@ -14,8 +14,10 @@ class W3CMarkupValidatorService extends BaseValidatorService
 
 	public function validate($file)
 	{
+
+		var_dump('validating file');
 		$this->curl = new \RollingCurl\RollingCurl();
-		$this->results = new \stdClass();
+		$this->result = new \Mudi\Result\ValidatorResult();
 		//PHP < 5.4
 		$self = $this;
 		$path = $file;
@@ -57,17 +59,17 @@ class W3CMarkupValidatorService extends BaseValidatorService
 						$warnings = "";
 					//@todo "abort status", "recursion"
 
-					$self->results->isValid = ($status === "Valid") ? true : false; 
-					$self->results->status 		= $status;
-					$self->results->errors 		= $errors;
-					$self->results->warnings 	= $warnings;
-					$self->results->encoding  	= $body['source']['encoding'];
+					$self->result->isValid 	= ($status === "Valid") ? true : false; 
+					$self->result->status 		= $status;
+					$self->result->error_count = $errors;
+					$self->result->warning_count 	= $warnings;
+					$self->result->encoding  	= $body['source']['encoding'];
 
-					if(empty($body['messages']))
+					if(!empty($body['messages']))
 					{
 						foreach($body['messages'] as $message)
 						{
-							$self->results->messages[]  	= $message;
+							$self->result->messages[]  	= $message;
 						}
 					}
 
@@ -82,7 +84,7 @@ class W3CMarkupValidatorService extends BaseValidatorService
 			->post('http://localhost/w3c-validator/check')
 			->execute();
 
-			return $this->results;
+			return $this->result;
 	}
 
 }

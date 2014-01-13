@@ -33,13 +33,13 @@ class LinkCheckerService
 
 	public function checkDocument($document_path)
 	{
-		$this->results = new \stdClass();
+		$this->result = new \Mudi\Result\LinkCheckerResult();
 
 		$urls = $this->extractUrls($document_path);
 		if(empty($urls))
 		{
-			$this->results->errors[] = 'aucun lien trouvé dans le document'; 
-			return $this->results;
+			$this->result->errors[] = 'aucun lien trouvé dans le document'; 
+			return $this->result;
 		}
 		else
 		{
@@ -111,15 +111,15 @@ class LinkCheckerService
 			}
 
 			$link->url = $url;
-			$this->results->urls[$url] = $link;		
+			$this->result->urls[$url] = $link;		
 		
 			if(false === $link->exists) $broken++;
 			$total++;							
 		}//foreach
 
-		$this->results->count_link = $total;
-		$this->results->broken = $broken;
-		return $this->results;
+		$this->result->link_count = $total;
+		$this->result->broken = $broken;
+		return $this->result;
 	}
 
 
@@ -161,7 +161,7 @@ class LinkCheckerService
 				
 				$link->url = $infos['url'];
 
-				$this->results->urls[$link->url] = $link; 
+				$this->result->urls[$link->url] = $link; 
 				
 			});
 
