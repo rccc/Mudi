@@ -6,12 +6,12 @@
 		
 		{% for documentName, result in results %}
 
-			<div class="panel result-item">
+			<div class="panel result-item {{ result.common_semantics is empty or result.headings is empty ? 'panel-danger' : 'panel-success'  }}">
 				<div class="panel-heading" data-toggle="collapse" data-target="#tag-usage-{{loop.index}}">
 					{{documentName}}
 				</div>
 				<div id="tag-usage-{{loop.index}}" class="panel-body collapse">
-
+								
 					{% if result.common_semantics is empty %}
 						<div><span class="label label-warning">Aucune balise sémantique/structurelle</span></div>
 					{% endif %}
