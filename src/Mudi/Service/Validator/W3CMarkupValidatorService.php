@@ -45,8 +45,10 @@ class W3CMarkupValidatorService extends BaseValidatorService
 					$header 	 = substr($request->getResponseText(), 0, $header_size);
 					$body 		 = json_decode( substr( $request->getResponseText(), $header_size ), true);
 
+					$status = '';
 					preg_match('/X-W3C-Validator-Status:\s([a-zA-Z]+)/', $header, $result);
 					if($result) list(,$status) 	= $result; 
+
 					preg_match('/X-W3C-Validator-Errors:\s(\d+)/', $header, $result);
 					if($result) 
 						list(,$errors)   = $result;
@@ -60,7 +62,7 @@ class W3CMarkupValidatorService extends BaseValidatorService
 					//@todo "abort status", "recursion"
 
 					$self->result->isValid 	= ($status === "Valid") ? true : false; 
-					$self->result->status 		= $status;
+					$self->result->status 	= $status;
 					$self->result->error_count = $errors;
 					$self->result->warning_count 	= $warnings;
 					$self->result->encoding  	= $body['source']['encoding'];

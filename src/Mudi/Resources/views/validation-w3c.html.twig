@@ -6,7 +6,7 @@
 		{% for documentName, result in results %}
 
 			<div class="panel {{ result.status == "Valid" ? 'panel-success' : 'panel-danger' }} result-item">
-				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#css-validator-{{ loop.index }}">
+				<div class="panel-heading" {{ result.status == 'Valid' ? '' : 'data-toggle="collapse"'}} data-target="#w3c-html-validator-{{ loop.index }}">
 					
 					<span>{{ documentName }}</span>
 
@@ -34,7 +34,7 @@
 
 				{% if result.status != "Valid"  %}
 
-					<div id="css-validator-{{ loop.index }}" class="panel-body collapse">
+					<div id="w3c-html-{{ loop.index }}" class="panel-body collapse">
 
 							<h3>Messages : </h3>
 							{% if result.messages %}
