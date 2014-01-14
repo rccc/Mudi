@@ -18,8 +18,15 @@ class CssUsageService
 
 	public function getUsage($file_path)
 	{
-		$this->parser = new \Sabberworm\CSS\Parser(file_get_contents($file_path));
-		$doc = $this->parser->parse();
+		try{
+			$this->parser = new \Sabberworm\CSS\Parser(file_get_contents($file_path));
+			$doc = $this->parser->parse();			
+		}
+		catch(\Exception $e)
+		{
+			$this->result->errors[] = $e->getMessage();
+		}
+
 		$this->cssList = $doc->getContents(); 
 
 		$this->countMediaQueries();
