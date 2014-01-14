@@ -40,26 +40,32 @@ class RunAllCommand extends MudiCommand
 		$output->writeln(sprintf('Executing %s ...', $this->getName()));
 
 		$services = array(
+
 			'Validation Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
 			'Validation HTML -W3C'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
 				'template' => 'validation-w3c.html.twig'),
-			'Validation CSS - W3C'			=> array(
-				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
-				'template' => 'validation-w3c-css.html.twig'),
 			'Vérification des liens' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
 				'template' => 'check_link.html.twig'),
 			'Stats balises utilisées' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
 				'template' => 'tag_usage.html.twig'),
+			'Validation CSS - W3C'			=> array(
+				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
+				'template' => 'validation-w3c-css.html.twig'),
+			'Usage propriétés CSS' => array(
+				'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
+				'template'     => 'css_usage.html.twig'
+				),
 			'Screenshot'				=> array(
 				'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
 				'template' => 'screenshot.html.twig',
-				'params'   => array('output_dir'))
+				'params'   => array('output_dir')) 
 			)
+
 		;
 
 		$input_dir = $input->getArgument('input_dir');
@@ -155,7 +161,7 @@ class RunAllCommand extends MudiCommand
 
 			$resource->delete_archive();
 
-			print PHP_EOL;
+			print PHP_EOL;  //die('DIE');
 		}
 
 		$output->writeln('<info>DONE</info>');

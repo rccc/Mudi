@@ -43,7 +43,7 @@ class ProxyService
 			$finder->files()->in($path)->name($this->file_extension);
 
 			foreach ($finder as $file) 
-			{  var_dump($file->getFileName());
+			{  
 				$arg = $this->arg_type === 'path' ? $file->getRealpath() : $file->getContents();
 				$this->results->add( $file->getFileName(), call_user_func(array($this->service, $this->method), $arg) );
 			}  

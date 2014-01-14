@@ -8,7 +8,8 @@
 	    "twig/twig"                         : "1.*",
         "neutron/temporary-filesystem"      : "dev-master",
         "symfony/finder"                    : "2.5.*@dev",
-        "neutron/process-manager"           : "~1.0"
+        "neutron/process-manager"           : "~1.0",
+        "sabberworm/php-css-parser"         : "*"
     },
     "autoload" : {
 	    "psr-0" : {

@@ -7,7 +7,7 @@
 	{% if results %}
 		{% for documentName, result in  results %}
 		
-			<div class="panel {{ result.broken > 0 ? 'panel-danger' : result.errors is empty ? 'panel-warning' : 'panel-info'  }} result-item">
+			<div class="panel {{ result.broken > 0 or result.urls is empty ? 'panel-danger' : result.errors is not empty ? 'panel-warning' : 'panel-success'  }} result-item">
 
 				<div class="panel-heading" data-toggle="collapse" data-target="#check-link-{{loop.index}}">
 					{{documentName}}
@@ -19,7 +19,7 @@
 					<span class="label label-info pull-right">{{ result.link_count }} </span>
 
 				</div>
-				<div id="check-link-{{loop.index}}" class="panel-body collapse in">
+				<div id="check-link-{{loop.index}}" class="panel-body collapse">
 				<ul>
 				{% if result.errors is defined %}
 					{% for error in result.errors %}

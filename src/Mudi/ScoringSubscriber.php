@@ -178,6 +178,82 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 	}
 
+
+	protected function w3c_css_validator_scoring($service_name, $resource_name, $results)
+	{
+		$value = 0;
+		$nb_doc = 0;
+		$invalid = 0;
+
+		foreach($results as $document_name => $result)
+		{
+			if($result->error_count > 0)
+			{
+				$value += 2;
+				$invalid++;
+			}
+
+			$nb_doc++;
+		}
+
+		$value = round($value / $nb_doc);
+		$this->decrementScore($value);
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf('%d fichiers css invalides sur $d', $invalid, $nb_doc));
+	}
+
+	protected function css_usage_scoring($service_name, $resource_name, $results)
+	{
+		$value 	= 0;
+		$nb_doc = 0;
+		$css3  	= 0;
+		$media_queries = 0;
+		$no_vendor     = 0;
+
+		foreach($results as $document_name => $result)
+		{
+			if(empty($result->css3_rules))
+			{
+				$value += 2;
+			}
+			else{
+				$css3++;
+				$value -= count($result->css3_rules) * 0.5;
+
+				if($result->css3_no_vendor > 0)
+				{
+					$no_vendor++;
+					$value += count($result->css3_no_vendor) * 1;
+				}
+
+			}
+
+			if(empty($result->media_queries))
+			{
+				$value += 2;
+			}
+			else{
+				$media_queries++;
+				$value -= count($result->media_queries) * 1;
+			}
+
+			$nb_doc++;
+		}
+
+		$value = round($value / $nb_doc);
+		$this->decrementScore($value);
+
+		if($css3 === 0)
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "pas de règles CSS3 dans le document");
+	
+		if($media_queries === 0)
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "pas de media queries dans le document");
+	
+		if($no_vendor > 0)
+			$this->addScoringMessage($resource_name, $service_name, $document_name, "'Vendor prefix' manquants");
+	
+
+	}
+
 	protected function decrementScore($resource_name, $value = 1)
 	{	
 		$key = $resource_name . "_score";

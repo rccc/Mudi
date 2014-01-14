@@ -1,3 +1,4 @@
+
 html, body {
  margin: 0;
  padding: 0;
@@ -33,4 +34,60 @@ a:hover {
 }
 a:active, a:focus {
  color: red;
+}
+
+
+.test-css3 {
+	-moz-box-shadow: 10px 10px 5px #888;
+	-webkit-box-shadow: 10px 10px 5px #888;
+	box-shadow: 10px 10px 5px #888;
+}
+
+.test-css3-no-vendor{
+	box-shadow: 10px 10px 5px #888;
+}
+
+
+.test-vendor {
+	-moz-border-radius: 10px 5px;
+	-webkit-border-top-left-radius: 10px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-radius: 10px 5px;
+}
+
+@media screen and (max-width: 640px) {
+	.bloc {
+		display:block;
+		clear:both;
+	}
+}
+
+
+@media screen and (max-width:480px)
+{
+	#container { width: 400px; }
+	
+	#nav
+	{
+		float: none;
+		width: auto;
+	}
+	
+	#content
+	{
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+	
+	#extras
+	{
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+	
+	.feature-image { display: none; }
 }

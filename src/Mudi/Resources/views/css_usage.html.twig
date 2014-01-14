@@ -1,0 +1,59 @@
+<section class="panel panel-default  result-section">
+	<header class="panel-heading">
+		<h2>Résultats usage propriétés CSS</h2>
+	</header>
+	<div class="panel-body">
+		
+		{% for documentName, result in results %}
+
+			<div class="panel result-item {{ result.media_queries == 0 ? 'panel-danger' : result.css3_rules == 0 ? 'panel-danger' : result.css3_no_vendor > 0 ? 'panel-warning' : panel-success }}">
+				<div class="panel-heading" data-toggle="collapse" data-target="#css-usage-{{loop.index}}">
+					{{documentName}}
+				</div>
+				<div id="css-usage-{{loop.index}}" class="panel-body collapse">
+
+					{% if result.media_query_count > 0 %}
+						<div>
+							<span class="label label-success">Media queries : {{ result.media_query_count }}</span>
+						</div>
+						
+						<ul>
+							{% for mq in result.media_queries %}
+								<li>{{ mq }}</li>
+							{% endfor %}
+						</ul>
+
+					{% else  %}
+						<div>
+							<span class="label label-danger">Ce document ne contient pas de "medias queries"</span>
+						</div>					
+					{% endif %}
+
+					{% if result.css3_count > 0 %}
+						<div>
+							<span class="label label-success">Propriétés CSS3 : {{ result.css3_count }}</span>
+						</div>
+						
+						{% if result.css3_no_vendor > 0 %}
+							<div>
+								<span class="label label-warning">Ce document contient {{ result.css3_no_vendor }} propriété(s) CSS3 sans "vendor prefix"</span>
+							</div>
+						{% endif %}
+									
+						<ul>
+							{% for rule in result.css3_rules %}
+								<li>{{ rule }}</li>
+							{% endfor %}
+						</ul>	
+
+					{% endif %}
+
+				</div> <!-- .panel-body -->
+			</div><!-- .result-item -->	
+
+		{% endfor %}
+	</div> <!-- .bd -->
+</section>
+
+
+
