@@ -43,10 +43,6 @@ a:active, a:focus {
 	box-shadow: 10px 10px 5px #888;
 }
 
-.test-css3-no-vendor{
-	box-shadow: 10px 10px 5px #888;
-}
-
 
 .test-vendor {
 	-moz-border-radius: 10px 5px;

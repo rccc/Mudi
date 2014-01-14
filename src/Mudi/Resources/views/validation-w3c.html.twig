@@ -38,9 +38,9 @@
 
 							<h3>Messages : </h3>
 							{% if result.messages %}
-								{% for data in result.messages %}
+								{% for message in result.messages %}
 
-									<p class="well"><em> {{ data.message }} </em></p>
+									<p class="well"><em> {{ message }} </em></p>
 
 								{% endfor %}
 							{% endif %}

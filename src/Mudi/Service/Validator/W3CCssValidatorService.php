@@ -24,8 +24,8 @@ class W3CCssValidatorService extends BaseValidatorService
 			)
 		;
 	
-		$ch = curl_init("http://jigsaw.w3.org/css-validator/validator");
-		//$ch = curl_init('http://aleph0.fr:8007/css-validator/#validate_by_upload');
+		//$ch = curl_init("http://jigsaw.w3.org/css-validator/validator");
+		$ch = curl_init('http://aleph0.fr:8007/css-validator/#validate_by_upload');
 		curl_setopt_array($ch, $options);
 
 		$response = curl_exec($ch);
