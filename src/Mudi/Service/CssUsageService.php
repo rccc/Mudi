@@ -25,6 +25,7 @@ class CssUsageService
 		catch(\Exception $e)
 		{
 			$this->result->errors[] = $e->getMessage();
+			return $this->result;
 		}
 
 		$this->cssList = $doc->getContents(); 
