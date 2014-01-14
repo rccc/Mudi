@@ -64,6 +64,11 @@ class LinkCheckerService
 			if(empty($url)){
 				$link->error = 'Un lien dont la valeur de l\'attribut "href" est vide a été trouvé dans le document';
 			}
+			elseif(0 === strpos($url, 'mailto'))
+			{
+				//on considère que le lien existe
+				$link->exists = true;
+			}
 			//empty anchor target ?
 			elseif(false !== strpos($url, '#'))
 			{
