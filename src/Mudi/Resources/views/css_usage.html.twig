@@ -6,7 +6,7 @@
 		
 		{% for documentName, result in results %}
 
-			<div class="panel result-item {{ result.media_queries == 0 ? 'panel-danger' : result.css3_rules == 0 ? 'panel-danger' : result.css3_no_vendor > 0 ? 'panel-warning' : panel-success }}">
+			<div class="panel result-item {{ result.media_queries == 0 ? 'panel-danger' : result.css3_rules == 0 ? 'panel-danger' : result.css3_no_vendor > 0 ? 'panel-warning' : 'panel-success' }}">
 				<div class="panel-heading" data-toggle="collapse" data-target="#css-usage-{{loop.index}}">
 					{{documentName}}
 				</div>
