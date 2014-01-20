@@ -11,8 +11,8 @@ class ProxyService
 	protected $service;
 	protected $results;
 	protected $file_extension;
-	protected $files;
-	protected $options;
+	//protected $files;
+	//protected $options;
 
 	public function execute()
 	{
