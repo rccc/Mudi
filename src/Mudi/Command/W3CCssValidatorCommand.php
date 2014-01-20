@@ -45,7 +45,7 @@ class W3ccssValidatorCommand extends MudiCommand
         $this->results = $service->validate(file_get_contents($resource->path));
 		*/
 
-        $service = new \Mudi\ProxyService\W3CCssValidatorProxyService($name);
+        $service = new \Mudi\ProxyService\W3CCssValidatorProxyService(array('resource_name'=>$name));
 
         $this->results = $service->execute();
 		

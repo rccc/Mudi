@@ -4,12 +4,12 @@ namespace Mudi\ProxyService;
 
 class ScreenshotProxyService extends \Mudi\ProxyService\ProxyService
 {
-	public function __construct($name = "", $output_dir, \Mudi\Resource $resource = null)
+	public function __construct($args = array())
 	{
-		$this->resource     = empty($resource) ? new \Mudi\Resource($name) : $resource;
+		$this->resource  = empty($args['resource']) ? new \Mudi\Resource($args['resource_name']) : $args['resource'];
 		$this->service 	    = new \Mudi\Service\ScreenshotService(); 
 		$this->results   	= new \Mudi\Collection\OutputCollection(); 
-		$this->output_dir 	= $output_dir;
+		$this->output_dir 	= $args['output_dir'];
 	}
 
 	public function execute()

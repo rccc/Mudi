@@ -36,7 +36,7 @@ class tagStatsCommand extends MudiCommand
 
         $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-        $service = new \Mudi\ProxyService\TagUsageProxyService($name);
+        $service = new \Mudi\ProxyService\TagUsageProxyService(array('resource_name'=>$name));
 
         $this->results = $service->execute();
 		

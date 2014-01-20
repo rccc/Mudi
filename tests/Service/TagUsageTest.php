@@ -17,7 +17,9 @@ class TagUsageTest extends \PHPUnit_Framework_TestCase
 		$file_path 	=  RESOURCES_PATH . 'demo.html';
 
 		$service 	= new TagUsageService($file_path);
-		$result  	= $service->getStats(); 		
+		$result  	= $service->getUsage(); 		
+
+var_dump($result);
 
 		$this->assertTrue( !empty($result->stats) );
 		$this->assertTrue( count($result->stats) > 0 );

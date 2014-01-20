@@ -38,7 +38,7 @@ class CssUsageCommand extends MudiCommand
 
 		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-		$service = new \Mudi\ProxyService\CssUsageProxyService($name);
+		$service = new \Mudi\ProxyService\CssUsageProxyService(array('resource_name'=>$name));
 
 		$this->results = $service->execute();
 

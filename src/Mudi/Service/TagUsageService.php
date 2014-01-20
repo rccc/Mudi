@@ -5,29 +5,44 @@ namespace Mudi\Service;
 class TagUsageService 
 {
 
-	public $name;
-	public $result;
-	protected $doc;
-	protected $tagList;
+	public 		$name;
+	public 		$result;
+	protected 	$doc;
+	protected 	$tagList;
+	protected 	$file_path;
 
-	public function __construct()
+	public function __construct($file_path)
 	{
+		$this->file_path = $file_path;
 		$this->result = new \Mudi\Result\TagUsageResult();
 		$this->name = "tag_usage";
 		$this->doc = new \DOMDocument();
 
 	}
 
-	protected function parse_file($file_path)
+	public function getUsage()
+	{
+		$this->parse_file();
+
+		$this->result->stats 			= $this->getStats();
+		$this->result->medias			= $this->getMedias();
+		$this->result->common_semantics = $this->getCommonSemantics();
+		$this->result->headings 		= $this->getHeadings();
+		$this->result->class_attr	 	= $this->countClassAttr();
+
+		return $this->result;
+	}
+
+	protected function parse_file()
 	{
 		libxml_use_internal_errors(true);
 
 		if(empty($this->tagList))
 		{
-			if(!$this->doc->loadHTMLFile($file_path))
+			if(!$this->doc->loadHTMLFile($this->file_path))
 			{
 				foreach (libxml_get_errors() as $error) {
-					$this->result->errors[] = $errors;
+					$this->result->errors[] = $error;
 				}
 
 				libxml_clear_errors();
@@ -42,23 +57,8 @@ class TagUsageService
 		}		
 	}
 
-	public function getUsage($file_path)
+	protected function getStats()
 	{
-		$this->parse_file($file_path);
-
-		$this->result->stats 			= $this->getStats($file_path);
-		$this->result->medias			= $this->getMedias();
-		$this->result->common_semantics = $this->getCommonSemantics();
-		$this->result->headings 		= $this->getHeadings();
-		$this->result->class_attr	 	= $this->countClassAttr();
-
-		return $this->result;
-	}
-
-	protected function getStats($file_path)
-	{
-
-		$this->parse_file($file_path);
 
 		$count_list = array();
 		foreach($this->tagList as $tag)
@@ -73,7 +73,6 @@ class TagUsageService
 		}
 
 		ksort($count_list);
-
 		return $count_list;
 
 	}

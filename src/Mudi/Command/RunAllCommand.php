@@ -53,9 +53,9 @@ class RunAllCommand extends MudiCommand
 			'Stats balises utilisées' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
 				'template' => 'tag_usage.html.twig'),
-			'Validation CSS - W3C'			=> array(
+			/*'Validation CSS - W3C'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
-				'template' => 'validation-w3c-css.html.twig'),
+				'template' => 'validation-w3c-css.html.twig'),*/
 			'Usage propriétés CSS' => array(
 				'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
 				'template'     => 'css_usage.html.twig'
@@ -98,24 +98,21 @@ class RunAllCommand extends MudiCommand
 			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$new_path = $output_dir . $file->getFileName();
-			if(!file_exists($new_path) && !mkdir($new_path))
+			$proxy_args['output_dir'] = $output_dir = $output_dir . $file->getFileName();
+
+			if(!file_exists($output_dir) && !mkdir($output_dir))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");
 			}
 
-			$resource = new \Mudi\Resource($file->getPathName());
+			$proxy_args['resource'] = $resource = new \Mudi\Resource($file->getPathName());
 
 			foreach($services as $service_name => $data)
 			{
 				$output->writeln('Current Service : ' . $service_name);
-				if($service_name === "Screenshot")
-				{
-					$proxy = new $data['ProxyService']('', $new_path,  $resource );	
-				}
-				else{
-					$proxy = new $data['ProxyService']('', $resource );
-				}
+
+				$proxy = new $data['ProxyService']($proxy_args);
+				
 				$results  = $proxy->execute();
 
 				$array[] = $twig->render($data['template'], array('results' => $results->all() )); 
@@ -140,17 +137,17 @@ class RunAllCommand extends MudiCommand
 
 			//resultats.html
 			$content = $twig->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
-			$result_path = sprintf('%s/resultats-%s.html', $new_path, $resource->name);
+			$result_path = sprintf('%s/resultats-%s.html', $output_dir, $resource->name);
 			file_put_contents( $result_path , $content);
 
 			//copy originals files
 			try{
-				$o_path = $new_path . DS . 'originaux';
-				if(!is_dir($o_path))
+				$originals_path = $output_dir . DS . 'originaux';
+				if(!is_dir($originals_path))
 				{
-					mkdir($o_path);
+					mkdir($originals_path);
 				}
-				$cmd = sprintf('cp -R %s/* %s/ ', $resource->archive_path, $o_path);
+				$cmd = sprintf('cp -R %s/* %s/ ', $resource->archive_path, $originals_path);
 				shell_exec($cmd);
 
 			}

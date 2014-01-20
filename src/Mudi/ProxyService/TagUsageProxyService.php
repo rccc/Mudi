@@ -4,10 +4,10 @@ namespace Mudi\ProxyService;
 
 class TagUsageProxyService extends \Mudi\ProxyService\ProxyService
 {
-	public function __construct($name = "", \Mudi\Resource $resource = null)
+	public function __construct($args = array())
 	{
-		$this->resource  = empty($resource) ? new \Mudi\Resource($name) : $resource;
-		$this->service 	 = new \Mudi\Service\TagUsageService(); 
+		$this->resource  = empty($args['resource']) ? new \Mudi\Resource($args['resource_name']) : $args['resource'];
+		$this->service 	 = new \Mudi\Service\TagUsageService($this->resource->path); 
 		$this->results   = new \Mudi\Collection\OutputCollection(); 
 		$this->method 	 = 'getUsage'; //service
 		$this->arg_type  = 'path'; //path ou content

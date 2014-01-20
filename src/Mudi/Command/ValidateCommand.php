@@ -40,7 +40,7 @@ class ValidateCommand extends BaseValidateCommand
 
 		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-		$service = new \Mudi\ProxyService\W3CMarkupValidatorProxyService($name);
+		$service = new \Mudi\ProxyService\W3CMarkupValidatorProxyService(array('resource_name'=>$name));
 
 		$this->results = $service->execute();
 

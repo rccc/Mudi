@@ -43,7 +43,7 @@ class CasperjsScreenshotCommand  extends MudiCommand
 
         $output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 		
-		$service = new \Mudi\ProxyService\ScreenshotProxyService($name, $output_dir);
+		$service = new \Mudi\ProxyService\ScreenshotProxyService(array('resource_name'=>$name, 'output_dir' => $output_dir));
 		$this->results = $service->execute();
 
 

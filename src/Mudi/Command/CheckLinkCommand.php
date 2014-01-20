@@ -39,7 +39,7 @@ class CheckLinkCommand extends MudiCommand
 
 		$output->writeln(sprintf('Executing %s for %s', $this->getName(), $name));
 
-		$service = new \Mudi\ProxyService\LinkCheckerProxyService($name);
+		$service = new \Mudi\ProxyService\LinkCheckerProxyService(array('resource_name'=>$name));
 
 		$this->results = $service->execute();
 		
