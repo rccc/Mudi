@@ -53,9 +53,9 @@ class RunAllCommand extends MudiCommand
 			'Stats balises utilisées' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
 				'template' => 'tag_usage.html.twig'),
-			/*'Validation CSS - W3C'			=> array(
+			'Validation CSS - W3C'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
-				'template' => 'validation-w3c-css.html.twig'),*/
+				'template' => 'validation-w3c-css.html.twig'),
 			'Usage propriétés CSS' => array(
 				'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
 				'template'     => 'css_usage.html.twig'
