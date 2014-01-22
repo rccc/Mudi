@@ -33,7 +33,10 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->$method($service_name, $resource_name, $results);
 		}
 
+		$this->count_file_scoring($event->getResource());
+
 	}
+
 
 	protected function link_checker_scoring($service_name, $resource_name, $results)
 	{
@@ -259,6 +262,12 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->addScoringMessage($resource_name, $service_name, $document_name, "'Vendor prefix' manquants");
 	
 
+	}
+
+
+	protected function count_file_scoring($resource){
+		var_dump("NB HTML", count( $resource->getFiles('*.html') ));
+		var_dump("NB CSS", count( $resource->getFiles('*.css') ));
 	}
 
 	protected function decrementScore($resource_name, $value = 1)

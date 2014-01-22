@@ -101,7 +101,7 @@ class TagUsageService
 
 	protected function getHeadings()
 	{
-		$headings = array('h1','h2', 'h3', 'h4', 'h5', 'h6', 'hgroup');
+		$headings = array('h1','h2','hgroup');
 		return  array_values( array_intersect( array_keys($this->result->stats), $headings) );
 	}
 
