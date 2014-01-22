@@ -27,7 +27,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'debug' => true
     ));
 
-
 //console as service
 $app->register(new ConsoleServiceProvider(), array(
     'console.name' => 'Mudi console',
