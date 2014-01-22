@@ -98,14 +98,16 @@ class RunAllCommand extends MudiCommand
 			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$proxy_args['output_dir'] = $output_dir = $output_dir . $file->getFileName();
-
-			if(!file_exists($output_dir) && !mkdir($output_dir))
+			$resource_output = $output_dir . $file->getFileName();
+			$proxy_args['output_dir'] = $resource_output;
+			
+			if(!file_exists($resource_output) && !mkdir($resource_output))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");
 			}
 
-			$proxy_args['resource'] = $resource = new \Mudi\Resource($file->getPathName());
+			$resource = new \Mudi\Resource($file->getPathName());
+			$proxy_args['resource'] = $resource;
 
 			foreach($services as $service_name => $data)
 			{
@@ -137,12 +139,12 @@ class RunAllCommand extends MudiCommand
 
 			//resultats.html
 			$content = $twig->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
-			$result_path = sprintf('%s/resultats-%s.html', $output_dir, $resource->name);
+			$result_path = sprintf('%s/resultats-%s.html', $resource_output, $resource->name);
 			file_put_contents( $result_path , $content);
 
 			//copy originals files
 			try{
-				$originals_path = $output_dir . DS . 'originaux';
+				$originals_path = $resource_output . DS . 'originaux';
 				if(!is_dir($originals_path))
 				{
 					mkdir($originals_path);

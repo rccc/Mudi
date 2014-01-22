@@ -10,6 +10,8 @@ class ScreenshotProxyService extends \Mudi\ProxyService\ProxyService
 		$this->service 	    = new \Mudi\Service\ScreenshotService(); 
 		$this->results   	= new \Mudi\Collection\OutputCollection(); 
 		$this->output_dir 	= $args['output_dir'];
+
+		var_dump('???', $this->output_dir);
 	}
 
 	public function execute()
