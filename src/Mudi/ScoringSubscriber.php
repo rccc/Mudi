@@ -53,7 +53,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		if($broken > 0)
 		{	
-			$value = round($value / $nb_doc);
+			$value = round($value / $nb_doc,1);
 			$this->decrementScore($resource_name, $value);
 			$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d lien(s) cassé(s) dans (%d) documents", $broken, $nb_doc));
 		}
@@ -68,13 +68,13 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(!empty($result->errors))
 			{
 				$errors = (int) $result->errors;
-				if($errors > 10)
+				if($errors > 5)
 				{
 					$value = 5;
 				}
 				else
 				{
-					$value = $errors * 0.5;
+					$value = $errors ;
 				}
 				$this->decrementScore($resource_name, $value);
 				$this->addScoringMessage($resource_name, $service_name, $document_name, "$errors erreur(s)");
@@ -95,11 +95,11 @@ class ScoringSubscriber implements EventSubscriberInterface
 			static $nb_doc = 0;
 			if($result->count_errors > 0) $invalid++;
 
-			if($result->count_errors > 3)
+			if($result->count_errors > 6)
 			{
-				$value += 3;
+				$value += 6;
 			}
-			elseif($result->count_errors > 0 && $result->count_errors <= 3)
+			elseif($result->count_errors > 0 && $result->count_errors <= 6)
 			{
 				$value += $result->count_errors;
 			}
@@ -107,7 +107,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$nb_doc++;
 		}
 
-		$value = round($value/$nb_doc);
+		$value = round($value/$nb_doc,1);
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, $document_name, "$invalid document(s) non valide(s)");
 	}
@@ -116,7 +116,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 	{
 		//var_dump('tag_usage_scoring');
 
-		$wanted_semantics = array('header', 'footer', 'article', 'section','nav');
+		$wanted_semantics = array('header', 'footer', 'article', 'section','nav','aside');
 		$wanted_headings  = array('h1', 'h2', 'hgroup');
 
 		$value 	= 0; //valeur à déduire
@@ -145,17 +145,17 @@ class ScoringSubscriber implements EventSubscriberInterface
 				$no_headings++;
 			}
 
-			//test présence balise "style" - on retire 2 points
+			//test présence balise "style" - on retire 3 points
 			if(in_array('style', array_keys($result->stats)))
 			{
-				$this->decrementScore($resource_name, 2);
+				$this->decrementScore($resource_name, 3);
 				$with_style++;
 			}
 
 			//test si utilisation de l'attribut "class"
 			if($result->class_attr === 0)
 			{
-				$this->decrementScore($resource_name, 2);
+				$this->decrementScore($resource_name, 3);
 				$this->addScoringMessage($resource_name, $service_name, $document_name, "L'attribut \"class\" n'est pas utilisé");
 			}
 
@@ -164,7 +164,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 
 		//on divise par le nombre de document
-		$value = round($value / $nb_doc);
+		$value = round($value / $nb_doc,1);
 		$this->decrementScore($resource_name, $value);
 
 		if($no_semantics > 0)
@@ -196,9 +196,9 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$nb_doc++;
 		}
 
-		$value = round($value / $nb_doc);
+		$value = round($value / $nb_doc,1);
 		$this->decrementScore($value);
-		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf('%d fichiers css invalides sur $d', $invalid, $nb_doc));
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
 	}
 
 	protected function css_usage_scoring($service_name, $resource_name, $results)
@@ -239,7 +239,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$nb_doc++;
 		}
 
-		$value = round($value / $nb_doc);
+		$value = round($value / $nb_doc,1);
 		$this->decrementScore($value);
 
 		if($css3 === 0)

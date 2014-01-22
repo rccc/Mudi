@@ -34,7 +34,7 @@ $app->register(new ConsoleServiceProvider(), array(
     'console.version' => '0.1.0',
     ));
 
-$app["request"] = array('basepath' => 'http://localhost/mudi/');
+$app["request"] = array('basepath' => 'http://aleph0.fr/~wtests/Mudi/');
 
 $commands = array(
     new \Mudi\Command\ValidateCommand(),
