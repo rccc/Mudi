@@ -6,10 +6,12 @@ use Symfony\Component\Process\Process;
 
 class TidyMarkupValidatorService extends BaseValidatorService
 {
+	protected $options;
 
-	public function __construct()
+	public function __construct($options = array())
 	{
 		$this->name = "tidy_validator";
+		$this->options = $options;
 	}
 
 	public function validateFile($path)
@@ -25,10 +27,12 @@ class TidyMarkupValidatorService extends BaseValidatorService
 		$errors = $this->getErrorMessages($process->getErrorOutput());
 
 		//validation xml 
+		/*
 		$process = new Process(sprintf('tidy -xml -q "%s"', $path));
 		$process->run();
 		$errors = array_merge( $this->getErrorMessages($process->getErrorOutput()), $errors);
-
+		*/
+	
 		if(!empty($errors))
 		{
 			$result->status = 2;

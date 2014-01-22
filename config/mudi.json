@@ -1,0 +1,23 @@
+{
+	"app_request_dev"	: "http://localhost/mudi/",
+	"app_request_prod"	: "http://aleph0.fr/~wtests/Mudi/",
+	"scoring"			: {
+		"many_page"	  		  : 2,    
+		"lien_non_valide" 	  : 0.5,  
+		"html_max_errors" 	  : 5,    
+		"html_error"	  	  : 1,    
+		"tidy_max_errors"  	  : 6,    
+		"tidy_error"      	  : 1,    
+		"semantic_not_used"   : 0.5,  
+		"heading_not_used"    : 0.5,  
+		"style_tag_used"      : 3,    
+        "class_attr_not_used" : 3,    
+        "css_has_error"      : 2,     
+        "css3_not_used"      : 2,     
+        "css3_rule_used"     : 0.5,   
+        "css3_rule_used_no_vendor" : 1, 
+        "mediaqueries_not_used" : 2,    
+        "mediaqueries_rule_used": 1    
+	}
+
+}

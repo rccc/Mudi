@@ -7,6 +7,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ScoringSubscriber implements EventSubscriberInterface
 {
+	protected $config;
+
+	public function __construct($config)
+	{
+		$this->config = $config;
+	}
+
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -44,7 +51,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 					if(false === $link->exists)
 					{	
 						$broken++;
-						$value += 0.5;
+						$value += $this->config['lien_non_valide'];
 					}
 				}
 			}
@@ -68,13 +75,13 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(!empty($result->errors))
 			{
 				$errors = (int) $result->errors;
-				if($errors > 5)
+				if($errors > $this->config['html_max_errors'])
 				{
-					$value = 5;
+					$value = $this->config['html_max_errors'];
 				}
 				else
 				{
-					$value = $errors ;
+					$value = $this->config['html_error'] * $errors ;
 				}
 				$this->decrementScore($resource_name, $value);
 				$this->addScoringMessage($resource_name, $service_name, $document_name, "$errors erreur(s)");
@@ -95,13 +102,13 @@ class ScoringSubscriber implements EventSubscriberInterface
 			static $nb_doc = 0;
 			if($result->count_errors > 0) $invalid++;
 
-			if($result->count_errors > 6)
+			if($result->count_errors > $this->config['tidy_max_errors'])
 			{
-				$value += 6;
+				$value += $this->config['tidy_max_errors'];
 			}
-			elseif($result->count_errors > 0 && $result->count_errors <= 6)
+			elseif($result->count_errors > 0 && $result->count_errors <= $this->config['tidy_max_errors'])
 			{
-				$value += $result->count_errors;
+				$value += $this->config['tidy_error'] * $result->count_errors;
 			}
 
 			$nb_doc++;
@@ -132,7 +139,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(!empty($diff_s))
 			{
 				//on retire un demi-point pour chaque balise non utilisée
-				$value += count($diff_s)* 0.5;
+				$value += count($diff_s)* $this->config['semantic_not_used'];
 				$no_semantics++;
 			}
 
@@ -141,21 +148,21 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(!empty($diff_h))
 			{
 				//on retire un demi-point pour chaque balise non utilisée
-				$value += count($diff_h)* 0.5;
+				$value += count($diff_h)* $this->config['heading_not_used'];
 				$no_headings++;
 			}
 
 			//test présence balise "style" - on retire 3 points
 			if(in_array('style', array_keys($result->stats)))
 			{
-				$this->decrementScore($resource_name, 3);
+				$this->decrementScore($resource_name, $this->config['style_tag_used']);
 				$with_style++;
 			}
 
 			//test si utilisation de l'attribut "class"
 			if($result->class_attr === 0)
 			{
-				$this->decrementScore($resource_name, 3);
+				$this->decrementScore($resource_name, $this->config['class_attr_not_used']);
 				$this->addScoringMessage($resource_name, $service_name, $document_name, "L'attribut \"class\" n'est pas utilisé");
 			}
 
@@ -189,7 +196,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		{
 			if($result->error_count > 0)
 			{
-				$value += 2;
+				$value += $this->config['css_has_error'];
 				$invalid++;
 			}
 
@@ -213,27 +220,27 @@ class ScoringSubscriber implements EventSubscriberInterface
 		{
 			if(empty($result->css3_rules))
 			{
-				$value += 2;
+				$value += $this->config['css3_not_used'];
 			}
 			else{
 				$css3++;
-				$value -= count($result->css3_rules) * 0.5;
+				$value -= count($result->css3_rules) * $this->config['css3_rule_used'];
 
 				if($result->css3_no_vendor > 0)
 				{
 					$no_vendor++;
-					$value += count($result->css3_no_vendor) * 1;
+					$value += count($result->css3_no_vendor) * $this->config['css3_rule_used_no_vendor'];
 				}
 
 			}
 
 			if(empty($result->media_queries))
 			{
-				$value += 2;
+				$value += $this->config['mediaqueries_not_used'];
 			}
 			else{
 				$media_queries++;
-				$value -= count($result->media_queries) * 1;
+				$value -= count($result->media_queries) * $this->config['mediaqueries_rule_used'];
 			}
 
 			$nb_doc++;

@@ -34,7 +34,9 @@ $app->register(new ConsoleServiceProvider(), array(
     'console.version' => '0.1.0',
     ));
 
-$app["request"] = array('basepath' => 'http://aleph0.fr/~wtests/Mudi/');
+$app->register(new Igorw\Silex\ConfigServiceProvider(BASE_PATH  . "/config/mudi.json"));
+
+$app["request"] = array('basepath' => $app['app_request_dev']);
 
 $commands = array(
     new \Mudi\Command\ValidateCommand(),
@@ -54,6 +56,6 @@ foreach ($commands as $command) {
     $app['console']->add($command);
 }
 
-$app['dispatcher']->addSubscriber( new \Mudi\ScoringSubscriber() );
+$app['dispatcher']->addSubscriber( new \Mudi\ScoringSubscriber($app['scoring']) );
 
 $app['console']->run();
