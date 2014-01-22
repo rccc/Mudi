@@ -137,22 +137,37 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		foreach($results as $document_name => $result)
 		{	
-			//diff_s retourne les balises sémantiques attendues qui ne sont pas présentes dans le document
-			$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
-			if(!empty($diff_s))
+
+			if(empty($result->common_semantics))
 			{
-				//on retire un demi-point pour chaque balise non utilisée
-				$value += count($diff_s)* $this->config['semantic_not_used'];
-				$no_semantics++;
+				$value += $this->config['no_semantics'];
+			}
+			else
+			{
+				//diff_s retourne les balises sémantiques attendues qui ne sont pas présentes dans le document
+				$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
+				if(!empty($diff_s))
+				{
+					//on retire un demi-point pour chaque balise non utilisée
+					$value += count($diff_s)* $this->config['semantic_not_used'];
+					$no_semantics++;
+				}	
 			}
 
-			//diff_h retourne les balises heading attendues qui ne sont pas présentes dans le document
-			$diff_h = array_diff($wanted_headings, $result->headings); 
-			if(!empty($diff_h))
+			if(empty($result->headings))
 			{
-				//on retire un demi-point pour chaque balise non utilisée
-				$value += count($diff_h)* $this->config['heading_not_used'];
-				$no_headings++;
+				$value += $this->config['no_headings'];
+			}
+			else
+			{
+				//diff_h retourne les balises heading attendues qui ne sont pas présentes dans le document
+				$diff_h = array_diff($wanted_headings, $result->headings); 
+				if(!empty($diff_h))
+				{
+					//on retire un demi-point pour chaque balise non utilisée
+					$value += count($diff_h)* $this->config['heading_not_used'];
+					$no_headings++;
+				}
 			}
 
 			//test présence balise "style" - on retire 3 points
@@ -266,8 +281,19 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 
 	protected function count_file_scoring($resource){
-		var_dump("NB HTML", count( $resource->getFiles('*.html') ));
-		var_dump("NB CSS", count( $resource->getFiles('*.css') ));
+
+		$value = 0;
+
+		$html_count = count( $resource->getFiles('*.html') );
+		$css_count  = count( $resource->getFiles('*.css') );
+
+		$value -= $html_count * $this->config['html_page'];
+		$value -= $css_count * $this->config['css_page'];
+
+		$this->decrementScore($value);
+		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
+		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
+
 	}
 
 	protected function decrementScore($resource_name, $value = 1)
@@ -278,7 +304,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 	}	
 
-	protected function addScoringMessage($resource_name, $service_name, $document_name, $message)
+	protected function addScoringMessage($resource_name, $service_name ="", $document_name ="", $message)
 	{
 		$key = $resource_name . "_scoring_messages";
 		if(!\Mudi\Registry::has($key))

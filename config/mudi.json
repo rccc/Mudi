@@ -11,7 +11,7 @@
 		"tidy_error"      	  : 1, 
 		"no_semantics"        : 5,   
 		"semantic_not_used"   : 0.5,
-		"no_heading"          : 3, 
+		"no_headings"          : 3, 
 		"heading_not_used"    : 0.5,  
 		"style_tag_used"      : 3,    
         "class_attr_not_used" : 3,    
