@@ -80,7 +80,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 		
 		var_dump('score . ' .$service_name, $value);
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -117,7 +117,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) contenant des erreurs sur %d document(s)", $doc_with_error, $nb_doc));
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -153,7 +153,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) non valide(s) sur %d document(s), %d erreur(s) au total", $invalid, $nb_doc, $total_errors));
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -247,7 +247,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->addScoringMessage($resource_name, $service_name, '', "$no_class_attr document(s) sans utilser l'attribut 'class'");				
 
 
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -275,7 +275,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -333,7 +333,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		if($no_vendor > 0)
 			$this->addScoringMessage($resource_name, $service_name, '', "'Vendor prefix' manquants");
 	
-		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
@@ -352,7 +352,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
-		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : %d </b>", $value));
+		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
