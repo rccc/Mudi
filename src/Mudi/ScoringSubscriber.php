@@ -340,7 +340,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			\Mudi\Registry::set($key, array());
 		}
 		$messages = \Mudi\Registry::get($key);
-		$messages[] = implode(' - ', func_get_args());
+		$messages[] = implode(' - ', array($service_name ="", $document_name ="", $message));
 		\Mudi\Registry::set($key, $messages);
 	}
 }
