@@ -79,6 +79,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		}
 		
+		var_dump('score . ' .$service_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
 
 	}
@@ -89,6 +90,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$doc_with_error = 0;
 		$nb_doc = 0;
 		$value = 0;
+
 
 		foreach ($results as $document_name => $result) 
 		{
@@ -110,6 +112,9 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value/$nb_doc,1);
+
+		var_dump('score . ' .$service_name, $value);
+
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) contenant des erreurs sur %d document(s)", $doc_with_error, $nb_doc));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
@@ -143,6 +148,9 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value/$nb_doc,1);
+
+		var_dump('score . ' .$service_name, $value);
+
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) non valide(s) sur %d document(s), %d erreur(s) au total", $invalid, $nb_doc, $total_errors));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
@@ -221,6 +229,9 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		//on divise par le nombre de document
 		$value = round($value / $nb_doc,1);
+
+		var_dump('score . ' .$service_name, $value);
+
 		$this->decrementScore($resource_name, $value);
 
 		if($no_semantics > 0)
@@ -259,6 +270,9 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value / $nb_doc,1);
+
+		var_dump('score . ' .$service_name, $value);
+
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
@@ -304,6 +318,10 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value / $nb_doc,1);
+
+		var_dump('score . ' .$service_name, $value);
+
+
 		$this->decrementScore($resource_name, $value);
 
 		if($css3 === 0)
@@ -330,6 +348,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$value -= $css_count * $this->config['css_page'];
 
 		$this->decrementScore($resource->name, $value);
+		var_dump('score count file ', $value);
 
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
