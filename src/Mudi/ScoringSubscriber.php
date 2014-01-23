@@ -37,7 +37,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		if($this->is_first)
 		{
-			$this->count_file_scoring($event->getRessource());
+			$this->count_file_scoring($event->getResource());
 			$this->is_first = false;
 		}
 
