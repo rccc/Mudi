@@ -289,6 +289,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		foreach($results as $document_name => $result)
 		{
+
 			if(empty($result->css3_rules))
 			{
 				$value += $this->config['css3_not_used'];

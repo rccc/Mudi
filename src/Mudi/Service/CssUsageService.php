@@ -11,7 +11,7 @@ class CssUsageService
 	public function __construct()
 	{
 
-		$this->name = 'css-usage';
+		$this->name = 'css_usage';
 		$this->result = new \Mudi\Result\CssUsageResult();
 	}
 
