@@ -73,6 +73,11 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->decrementScore($resource_name, $value);
 			$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d lien(s) cassé(s) dans (%d) documents", $broken, $nb_doc));
 		}
+		else
+		{
+			$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("Aucun lien(s) cassé(s) (%d documents)", $nb_doc));
+
+		}
 		
 		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
 
@@ -340,7 +345,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			\Mudi\Registry::set($key, array());
 		}
 		$messages = \Mudi\Registry::get($key);
-		$messages[] = implode(' - ', array($service_name ="", $document_name ="", $message));
+	$messages[] = implode(' - ', array($service_name ="", $document_name ="", $message¨));
 		\Mudi\Registry::set($key, $messages);
 	}
 }
