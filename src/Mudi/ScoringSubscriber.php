@@ -123,6 +123,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$nb_doc 	= 0;
 		$invalid 	= 0;
 		$value 		= 0;
+		$total_errors = 0;
 
 		foreach($results as $document_name => $result)
 		{	
@@ -138,12 +139,13 @@ class ScoringSubscriber implements EventSubscriberInterface
 				$value += $this->config['tidy_error'] * $result->count_errors;
 			}
 
+			$total_errors += $result->count_errors;
 			$nb_doc++;
 		}
 
 		$value = round($value/$nb_doc,1);
 		$this->decrementScore($resource_name, $value);
-		$this->addScoringMessage($resource_name, $service_name, $document_name, "$invalid document(s) non valide(s)");
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d document(s) non valide(s) sur %d document(s), %d erreur(s) au total", $invalid, $nb_doc, $total_errors));
 		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
 
 	}
