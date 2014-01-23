@@ -322,7 +322,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 
 	protected function count_file_scoring($resource){
-
+var_dump('count file scoring');
 		$value = 0;
 
 		$html_count = count( $resource->getFiles('*.html') );
