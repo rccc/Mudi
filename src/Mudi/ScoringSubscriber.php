@@ -225,10 +225,10 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$this->decrementScore($resource_name, $value);
 
 		if($no_semantics > 0)
-			$this->addScoringMessage($resource_name, $service_name, '', "$no_semantics document(s) avec balises sémantiques manquantes");
+			$this->addScoringMessage($resource_name, $service_name, '', "$no_semantics document(s) avec toutes ou quelques balises sémantiques manquantes");
 		
 		if($no_headings > 0)
-			$this->addScoringMessage($resource_name, $service_name, '', "$no_headings document(s) avec balises d'en-tête manquantes");
+			$this->addScoringMessage($resource_name, $service_name, '', "$no_headings document(s) avec toutes ou quelques balises d'en-tête manquantes");
 		
 		if($with_style > 0)		
 			$this->addScoringMessage($resource_name, $service_name, '', "$with_style document(s) avec balise(s) style détectée(s)");				
@@ -334,7 +334,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$this->decrementScore($value);
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
-		
 		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : +%d </b>", $value));
 
 	}
