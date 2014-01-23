@@ -335,7 +335,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
 		
-		$this->addScoringMessage($resource_name, 'count file', '', sprintf("<b>scoring : +%d </b>", $value));
+		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : +%d </b>", $value));
 
 	}
 
