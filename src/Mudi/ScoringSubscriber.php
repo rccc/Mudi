@@ -162,6 +162,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$no_semantics= 0;
 		$no_headings = 0;
 		$with_style = 0;
+		$no_class_attr = 0;
 
 		foreach($results as $document_name => $result)
 		{	
@@ -169,6 +170,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(empty($result->common_semantics))
 			{
 				$value += $this->config['no_semantics'];
+				$no_semantics++;
+
 			}
 			else
 			{
@@ -176,7 +179,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 				$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
 				if(!empty($diff_s))
 				{
-					//on retire un demi-point pour chaque balise non utilisée
 					$value += count($diff_s)* $this->config['semantic_not_used'];
 					$no_semantics++;
 				}	
@@ -185,6 +187,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			if(empty($result->headings))
 			{
 				$value += $this->config['no_headings'];
+				$no_headings++;
 			}
 			else
 			{
@@ -208,6 +211,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			//test si utilisation de l'attribut "class"
 			if($result->class_attr === 0)
 			{
+				$no_class_attr++;
 				$this->decrementScore($resource_name, $this->config['class_attr_not_used']);
 				$this->addScoringMessage($resource_name, $service_name, $document_name, "L'attribut \"class\" n'est pas utilisé");
 			}
@@ -228,6 +232,10 @@ class ScoringSubscriber implements EventSubscriberInterface
 		
 		if($with_style > 0)		
 			$this->addScoringMessage($resource_name, $service_name, '', "$with_style document(s) avec balise(s) style détectée(s)");				
+
+		if($with_style > 0)		
+			$this->addScoringMessage($resource_name, $service_name, '', "$no_class_attr document(s) sans utilser l'attribut 'class'");				
+
 
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
 
