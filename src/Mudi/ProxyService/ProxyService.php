@@ -7,12 +7,11 @@ use Neutron\TemporaryFilesystem\TemporaryFilesystem;
 
 class ProxyService
 {
-	protected $resource;
-	protected $service;
-	protected $results;
 	protected $file_extension;
-	//protected $files;
-	//protected $options;
+	protected $options;
+	protected $resource;
+	protected $results;
+	protected $service;
 
 	public function execute()
 	{
@@ -66,6 +65,20 @@ class ProxyService
 	public function getResults()
 	{
 		return $this->results->all();
+	}
+
+	public function __set($name, $value)
+	{
+		$this->options[$name] = $value;
+	}
+
+	public function __get($name)
+	{
+		if(array_key_exists($name, $this->options))
+		{
+			return $this->options[$name];
+		}
+		return null;
 	}
 
 }

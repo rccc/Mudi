@@ -39,31 +39,33 @@ class RunAllCommand extends MudiCommand
 
 		$output->writeln(sprintf('Executing %s ...', $this->getName()));
 
+		$container = $this->getApplication()->getContainer();
+
 		$services = array(
 
-			'Validation Tidy'   		 => array(
+			'Validation_Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
-			'Validation HTML -W3C'			=> array(
+			'Validation_HTML'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
 				'template' => 'validation-w3c.html.twig'),
-			'Vérification des liens' 	=> array(
+			'Vérification_liens' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
 				'template' => 'check_link.html.twig'),
-			'Stats balises utilisées' 	=> array(
+			'Stats_balises' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
 				'template' => 'tag_usage.html.twig'),
-			'Validation CSS - W3C'			=> array(
+			'Validation_CSS'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
 				'template' => 'validation-w3c-css.html.twig'),
-			'Usage propriétés CSS' => array(
+			'CSS_Usage' => array(
 				'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
 				'template'     => 'css_usage.html.twig'
 				),
 			'Screenshot'				=> array(
 				'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
 				'template' => 'screenshot.html.twig',
-				'params'   => array('output_dir')) 
+				) 
 			)
 
 		;
@@ -99,7 +101,6 @@ class RunAllCommand extends MudiCommand
 
 			//création nouveau dossier 
 			$resource_output = $output_dir . $file->getFileName();
-			$proxy_args['output_dir'] = $resource_output;
 			
 			if(!file_exists($resource_output) && !mkdir($resource_output))
 			{
@@ -107,13 +108,27 @@ class RunAllCommand extends MudiCommand
 			}
 
 			$resource = new \Mudi\Resource($file->getPathName());
-			$proxy_args['resource'] = $resource;
 
 			foreach($services as $service_name => $data)
 			{
 				$output->writeln('Current Service : ' . $service_name);
 
-				$proxy = new $data['ProxyService']($proxy_args);
+				$options['resource'] = $resource;
+
+				if($service_name === 'Validation_HTML')
+				{
+					$options['service_url'] = $container['html_validation_url'];
+				}
+				elseif($service_name === 'Validation_CSS')
+				{
+					$options['service_url'] = $container['css_validation_url'];
+				}
+				elseif($service_name === "Screenshot")
+				{
+					$options['output_dir'] = $resource_output;
+				}
+
+				$proxy = new $data['ProxyService']($options);
 				
 				$results  = $proxy->execute();
 

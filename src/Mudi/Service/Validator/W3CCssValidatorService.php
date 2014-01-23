@@ -4,12 +4,18 @@ namespace Mudi\Service\Validator;
 
 class W3CCssValidatorService extends BaseValidatorService
 {
+	
+	const DEFAULT_URL = 'http://jigsaw.w3.org/css-validator/validator';
+	protected $options;
 	protected $result;
+	protected $service_url;
 
-	public function __construct()
+	public function __construct($options = array())
 	{
 		$this->name = 'w3c_css_validator';
+		$this->options = $options;
 		$this->result = new \Mudi\Result\ValidatorResult();
+		$this->service_url = !empty($this->options['service_url'])? $this->options['service_url'] : self::DEFAULT_URL;
 	}
 
 	public function validate($file_content)
@@ -24,14 +30,11 @@ class W3CCssValidatorService extends BaseValidatorService
 			)
 		;
 	
-		//$ch = curl_init("http://jigsaw.w3.org/css-validator/validator");
 		//$ch = curl_init('http://aleph0.fr:8007/css-validator/#validate_by_upload');
-		$ch = curl_init('http://aleph0.fr:8007/css-validator/validator');
+		$ch = curl_init($this->service_url);
 		curl_setopt_array($ch, $options);
 
 		$response = curl_exec($ch);
-
-var_dump($response);
 
 		if(false === $response)
 		{

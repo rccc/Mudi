@@ -8,10 +8,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ScoringSubscriber implements EventSubscriberInterface
 {
 	protected $config;
+	protected $is_first;
 
 	public function __construct($config)
 	{
 		$this->config = $config;
+		$this->is_first = false;
 	}
 
 	static public function getSubscribedEvents()
@@ -33,7 +35,11 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->$method($service_name, $resource_name, $results);
 		}
 
-		$this->count_file_scoring($event->getResource());
+		if($this->is_first)
+		{
+			$this->count_file_scoring($event->getRessource());
+			$this->is_first = false;
+		}
 
 	}
 
@@ -67,29 +73,42 @@ class ScoringSubscriber implements EventSubscriberInterface
 			$this->decrementScore($resource_name, $value);
 			$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d lien(s) cassé(s) dans (%d) documents", $broken, $nb_doc));
 		}
+		
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
+
 	}
 
 	protected function w3c_markup_validator_scoring($service_name, $resource_name, $results)
 	{
 		//var_dump('w3c_markup_validator_scoring');
+		$doc_with_error = 0;
+		$nb_doc = 0;
+		$value = 0;
 
 		foreach ($results as $document_name => $result) 
 		{
+			$nb_doc++;
+
 			if(!empty($result->errors))
 			{
+				$doc_with_error++;
 				$errors = (int) $result->errors;
 				if($errors > $this->config['html_max_errors'])
 				{
-					$value = $this->config['html_max_errors'];
+					$value += $this->config['html_max_errors'];
 				}
 				else
 				{
-					$value = $this->config['html_error'] * $errors ;
+					$value += $this->config['html_error'] * $errors ;
 				}
-				$this->decrementScore($resource_name, $value);
-				$this->addScoringMessage($resource_name, $service_name, $document_name, "$errors erreur(s)");
 			}
 		}
+
+		$value = round($value/$nb_doc,1);
+		$this->decrementScore($resource_name, $value);
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("%d document(s) contenant des erreurs sur %d document(s)", $doc_with_error, $nb_doc));
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
+
 	}
 
 	protected function tidy_validator_scoring($service_name, $resource_name, $results)
@@ -120,6 +139,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$value = round($value/$nb_doc,1);
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, $document_name, "$invalid document(s) non valide(s)");
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
+
 	}
 
 	protected function tag_usage_scoring($service_name, $resource_name, $results)
@@ -201,6 +222,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 		if($with_style > 0)		
 			$this->addScoringMessage($resource_name, $service_name, $document_name, "$with_style document(s) avec balise(s) style détectée(s)");				
 
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
+
 	}
 
 
@@ -224,6 +247,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$value = round($value / $nb_doc,1);
 		$this->decrementScore($value);
 		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
+
 	}
 
 	protected function css_usage_scoring($service_name, $resource_name, $results)
@@ -276,6 +301,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		if($no_vendor > 0)
 			$this->addScoringMessage($resource_name, $service_name, $document_name, "'Vendor prefix' manquants");
 	
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : %d </b>", $value));
 
 	}
 
@@ -293,6 +319,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$this->decrementScore($value);
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
+		
+		$this->addScoringMessage($resource_name, $service_name, $document_name, sprintf("<b>scoring : +%d </b>", $value));
 
 	}
 
@@ -311,7 +339,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		{
 			\Mudi\Registry::set($key, array());
 		}
-		$messages = \Mudi\Registry::get($key);
+		//$messages = \Mudi\Registry::get($key);
 		$messages[] = implode(' - ', func_get_args());
 		\Mudi\Registry::set($key, $messages);
 	}

@@ -21,6 +21,7 @@
         "css3_rule_used_no_vendor" : 1, 
         "mediaqueries_not_used" : 2,    
         "mediaqueries_rule_used": 1    
-	}
-
+	},
+    "css_validation_url" : "http://aleph0.fr:8007/css-validator/validator",
+    "html_validation_url": "http://localhost/w3c-validator/check"
 }

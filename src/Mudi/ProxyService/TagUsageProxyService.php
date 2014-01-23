@@ -12,7 +12,6 @@ class TagUsageProxyService extends \Mudi\ProxyService\ProxyService
 		$this->method 	 = 'getUsage'; //service
 		$this->arg_type  = 'path'; //path ou content
 		$this->file_extension = '*.html';
-
 	}
 	
 }

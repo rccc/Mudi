@@ -4,18 +4,25 @@ namespace Mudi\Service\Validator;
 
 class W3CMarkupValidatorService extends BaseValidatorService
 {
+	const DEFAULT_URL = 'http://validator.w3.org/check';
+	
 	protected $curl;
+	protected $options;
 	protected $results;
+	protected $service_url;
 
-	public function __construct()
+
+	public function __construct($options = array())
 	{
 		$this->name = 'w3c_markup_validator';
+		$this->options = $options;
+		$this->service_url =  !empty($this->options['service_url'])? $this->options['service_url'] : self::DEFAULT_URL;
+		var_dump($this->service_url);
 	}
 
 	public function validate($file)
 	{
 
-		var_dump('validating file');
 		$this->curl = new \RollingCurl\RollingCurl();
 		$this->result = new \Mudi\Result\ValidatorResult();
 		//PHP < 5.4
@@ -82,8 +89,7 @@ class W3CMarkupValidatorService extends BaseValidatorService
 				}
 
 			})
-			//->post('http://validator.w3.org/check')
-			->post('http://localhost/w3c-validator/check')
+			->post($this->service_url)
 			->execute();
 
 			return $this->result;
