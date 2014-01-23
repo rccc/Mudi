@@ -127,7 +127,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		foreach($results as $document_name => $result)
 		{	
-			static $nb_doc = 0;
 			if($result->count_errors > 0) $invalid++;
 
 			if($result->count_errors > $this->config['tidy_max_errors'])
@@ -329,14 +328,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$value -= $html_count * $this->config['html_page'];
 		$value -= $css_count * $this->config['css_page'];
-		var_dump("value", $value); 
 
 		$this->decrementScore($resource->name, $value);
-
-		$key = $resource->name . "_score";
-		var_dump('tkey', $key);
-		var_dump('?', \Mudi\Registry::get($key));
-		//var_dump(\Mudi\Registry::get($key) - $value);
 
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
