@@ -8,12 +8,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class ScoringSubscriber implements EventSubscriberInterface
 {
 	protected $config;
-	protected $is_first;
+	protected $current_resource;
 
 	public function __construct($config)
 	{
 		$this->config = $config;
-		$this->is_first = true;
+		$this->current_resource = '';
 	}
 
 	static public function getSubscribedEvents()
@@ -29,16 +29,16 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$resource_name 	= $event->getResourceName();
 		$results 		= $event->getResults();
 		$method 		= $service_name . '_scoring';
-		
+
+		if($resource_name !== $this->current_resource)
+		{
+			$this->current_resource = $resource_name;
+			$this->count_file_scoring($event->getResource());
+		}
+
 		if(method_exists($this, $method))
 		{
 			$this->$method($service_name, $resource_name, $results);
-		}
-
-		if($this->is_first)
-		{
-			$this->count_file_scoring($event->getResource());
-			$this->is_first = false;
 		}
 
 	}
@@ -260,7 +260,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value / $nb_doc,1);
-		$this->decrementScore($value);
+		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %d </b>", $value));
 
@@ -305,7 +305,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value / $nb_doc,1);
-		$this->decrementScore($value);
+		$this->decrementScore($resource_name, $value);
 
 		if($css3 === 0)
 			$this->addScoringMessage($resource_name, $service_name, '', "pas de règles CSS3 dans le document");
@@ -322,7 +322,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 
 	protected function count_file_scoring($resource){
-var_dump('count file scoring');
 		$value = 0;
 
 		$html_count = count( $resource->getFiles('*.html') );
@@ -330,21 +329,29 @@ var_dump('count file scoring');
 
 		$value -= $html_count * $this->config['html_page'];
 		$value -= $css_count * $this->config['css_page'];
+		var_dump("value", $value); 
 
-		$this->decrementScore($value);
+		$this->decrementScore($resource->name, $value);
+
+		$key = $resource->name . "_score";
+		var_dump('tkey', $key);
+		var_dump('?', \Mudi\Registry::get($key));
+		//var_dump(\Mudi\Registry::get($key) - $value);
+
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));
-		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : +%d </b>", $value));
+		$this->addScoringMessage($resource->name, 'count file', '', sprintf("<b>scoring : %d </b>", $value));
 
 	}
 
 	protected function decrementScore($resource_name, $value = 1)
 	{	
 		$key = $resource_name . "_score";
-
-		\Mudi\Registry::set( $key,   ( \Mudi\Registry::get($key) - $value ) );
+		$score = !is_null(\Mudi\Registry::get($key))? \Mudi\Registry::get($key) : 0;
+		\Mudi\Registry::set( $key,   ( $score - $value ) );
 
 	}	
+
 
 	protected function addScoringMessage($resource_name, $service_name ="", $document_name ="", $message)
 	{
