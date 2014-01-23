@@ -6,7 +6,7 @@ class W3CCssValidatorProxyService extends \Mudi\ProxyService\ProxyService
 {
 	public function __construct($args = array())
 	{
-		$opts 			 = !empty($args['service_options']) ? $args['service_options'] : array();
+		$opts['service_url'] 	= !empty($args['service_url']) ? $args['service_url'] : array();
 		$this->resource  = !empty($args['resource']) ? $args['resource'] : new \Mudi\Resource($args['resource_name']);
 		$this->service 	 = new \Mudi\Service\Validator\W3CCssValidatorService($opts); 
 		$this->results   = new \Mudi\Collection\OutputCollection(); 

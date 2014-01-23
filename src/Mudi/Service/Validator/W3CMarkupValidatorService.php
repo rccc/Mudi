@@ -17,7 +17,6 @@ class W3CMarkupValidatorService extends BaseValidatorService
 		$this->name = 'w3c_markup_validator';
 		$this->options = $options;
 		$this->service_url =  !empty($this->options['service_url'])? $this->options['service_url'] : self::DEFAULT_URL;
-		var_dump($this->service_url);
 	}
 
 	public function validate($file)

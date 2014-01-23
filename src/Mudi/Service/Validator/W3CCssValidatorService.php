@@ -16,7 +16,6 @@ class W3CCssValidatorService extends BaseValidatorService
 		$this->options = $options;
 		$this->result = new \Mudi\Result\ValidatorResult();
 		$this->service_url = !empty($this->options['service_url'])? $this->options['service_url'] : self::DEFAULT_URL;
-		var_dump('service_url', $this->service_url);
 	}
 
 	public function validate($file_content)

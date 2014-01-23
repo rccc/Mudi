@@ -121,6 +121,7 @@ class RunAllCommand extends MudiCommand
 				}
 				elseif($service_name === 'Validation_CSS')
 				{
+					var_dump($container['css_validation_url']);
 					$options['service_url'] = $container['css_validation_url'];
 				}
 				elseif($service_name === "Screenshot")

@@ -10,7 +10,7 @@ class W3CMarkupValidatorProxyService extends \Mudi\ProxyService\ProxyService
 
 	public function __construct($options = array())
 	{
-		$opts 			 = !empty($options['service_options']) ? $options['service_options'] : array();
+		$opts['service_url'] = !empty($options['service_url']) ? $options['service_url'] : array();
 		$this->resource  = !empty($options['resource']) ? $options['resource'] : new \Mudi\Resource($options['resource_name']);
         $this->service   = new \Mudi\Service\Validator\W3CMarkupValidatorService($opts); 
         $this->results   = new \Mudi\Collection\OutputCollection(); 
