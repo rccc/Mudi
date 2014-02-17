@@ -65,6 +65,8 @@ class tagStatsCommand extends MudiCommand
 				$tmp[] = sprintf("%s %s=> %d", $tagName,str_repeat("\t", 2), $count);
 			}
 			print implode(PHP_EOL, $tmp) . PHP_EOL;
+
+			var_dump($result);
 		}
 
 		$output->writeln( sprintf('<info>%s DONE</info>', $this->getName()) );
@@ -75,5 +77,6 @@ class tagStatsCommand extends MudiCommand
 		$twig = $this->getApplication()->getService('twig');
 		
 		print $twig->render('tag_usage.html.twig', array('results' => $this->results->all()));
+
 	}
 }

@@ -174,6 +174,8 @@ class ScoringSubscriber implements EventSubscriberInterface
 		foreach($results as $document_name => $result)
 		{	
 
+			var_dump("result", $result);
+
 			if(empty($result->common_semantics))
 			{
 				$value += $this->config['no_semantics'];
@@ -184,6 +186,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			{
 				//diff_s retourne les balises sémantiques attendues qui ne sont pas présentes dans le document
 				$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
+				var_dump('diff_', $diff_s);
 				if(!empty($diff_s))
 				{
 					$value += count($diff_s)* $this->config['semantic_not_used'];
@@ -200,6 +203,7 @@ class ScoringSubscriber implements EventSubscriberInterface
 			{
 				//diff_h retourne les balises heading attendues qui ne sont pas présentes dans le document
 				$diff_h = array_diff($wanted_headings, $result->headings); 
+				var_dump('diff_h', $diff_h);
 				if(!empty($diff_h))
 				{
 					//on retire un demi-point pour chaque balise non utilisée

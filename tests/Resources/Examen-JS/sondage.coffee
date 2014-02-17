@@ -1,0 +1,2 @@
+casper.echo 'test'
+

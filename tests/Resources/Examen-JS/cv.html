@@ -1,0 +1,279 @@
+<HTML><HEAD><TITLE>CV</TITLE>
+<SCRIPT LANGUAGE="JavaScript">
+
+
+ 
+function popup() {
+
+	w=open("CV",'cv','width=600,height=400,toolbar=yes,scrollbars=yes,resizable=yes');	
+	w.document.write("<TITLE> CV de "+document.cv.nom.value+"</TITLE>");
+	
+	w.document.write("<h1>Curriculum vitae</h1><hr>");
+	
+	w.document.write("<h3>Informations Personnelles</h3><hr>");
+	w.document.write("Nom :"+document.cv.nom.value+"<br>");
+	w.document.write("Prénom :"+document.cv.prenom.value+"<br>");
+	w.document.write("Adresse Postale :"+document.cv.adresse.value+"<br>");
+	w.document.write("Téléphone :"+document.cv.tel.value+"<br>");
+	w.document.write("Adresse Mail :"+document.cv.email.value+"<br>");
+	
+	w.document.write("<hr><h3>Formations</h3><hr>");
+	w.document.write(""+document.cv.formation.value+"<br>");
+	
+	w.document.write("<hr><h3>Compétences</h3><hr>"); 
+	w.document.write("<ul><li>"+document.cv.competence_initiale.value+"</li>");
+	
+	for (var i=0;i<document.getElementsByName('case').length;i++){
+		w.document.write("<li>"+document.getElementsByName('case')[i].value+"</li>");
+		
+	}
+	
+	w.document.write("</ul>");
+	
+
+    w.document.write("<hr><h3>Langues</h3><hr>");
+    
+    w.document.write("<ul><li>Français: ");
+    var LangFr = document.getElementsByName("fr");
+    for (var i=0; i<LangFr.length;i++) {
+         if (LangFr[i].checked) {
+            w.document.write(LangFr[i].value+"</li>");
+         }
+      }
+      
+          w.document.write("<li>Anglais: ");
+    var LangAng = document.getElementsByName("ang");
+    for (var i=0; i<LangAng.length;i++) {
+         if (LangAng[i].checked) {
+            w.document.write(LangAng[i].value+"</li>");
+         }
+      }
+    
+              w.document.write("<li>Allemend: ");
+    var LangA1 = document.getElementsByName("a1");
+    for (var i=0; i<LangA1.length;i++) {
+         if (LangA1[i].checked) {
+            w.document.write(LangA1[i].value+"</li>");
+         }
+      }
+      
+                w.document.write("<li>Espagnol: ");
+    var LangA2 = document.getElementsByName("a2");
+    for (var i=0; i<LangA2.length;i++) {
+         if (LangA2[i].checked) {
+            w.document.write(LangA2[i].value+"</li></ul>");
+         }
+      }
+      
+      
+      w.document.write("<hr><h3>Centre d'intérêts</h3><hr>");
+      
+      
+      for (var i=0;i<document.getElementsByName('inter').length;i++){
+		  
+		  if (document.getElementsByName('inter')[i].checked==true){
+		w.document.write("<li> "+document.getElementsByName('inter')[i].value+"</li>");
+		}
+		
+	}
+      
+      w.document.write('<INPUT TYPE=button NAME="" value=fermer onclick=self.close()>')
+
+
+}
+
+
+	function ajouterChamps(){
+
+				var DivToAdd = document.getElementById('divTest');
+				var tempBR = document.createElement('br');
+				DivToAdd.appendChild(tempBR);
+
+				var comp = document.createElement('label');
+				DivToAdd.appendChild(comp);
+				comp.innerHTML='Autre Compétence :';
+				tempInput = document.createElement('input');
+				tempInput.setAttribute("type","text");
+				tempInput.setAttribute("name","case");
+				tempInput.setAttribute("value","Autre Compétence");
+				DivToAdd.appendChild(tempInput);
+		
+	}
+	
+	function Verif(){
+	
+	 var name=document.cv.nom.value;
+
+    reg = new RegExp("^[A-Za-z\b]{2,}$");
+    if (!reg.test(name)) {
+        alert("Veuillez entrer un nom avec des lettres !");
+        return false;
+    }   
+    
+    var prenom=document.cv.prenom.value;
+
+    reg = new RegExp("^[A-Za-z\b]{2,}$");
+    if (!reg.test(prenom)) {
+        alert("Veuillez entrer un prénom avec des lettres !");
+        return false;
+    } 
+    
+    var tel=document.cv.tel.value;
+
+    reg = new RegExp("^0[1-68][0-9]{8}$");
+    if (!reg.test(tel)) {
+        alert("Veuillez entrer un numéro de téléphone de 10 chiffres!");
+        return false;
+    }   
+    
+    
+    var email=document.cv.email.value;
+    reg = new RegExp("^[0-9a-z-_+\.]+@[0-9a-z-_+]+[.][a-z]{2,4}$");
+    if (!reg.test(email)) {
+        alert("Veuillez entrer un email correct.");
+        return false;
+    }
+    
+    return true;
+	
+	}
+	
+</SCRIPT>
+</HEAD>
+
+<BODY  >
+<FONT FACE="Arial" SIZE='-1' COLOR="#333333">
+
+<h1><center>Génération du Curriculum vitae</center></h1>
+<FORM name="cv">
+	<div style="background:">
+	<table>
+		<tr>
+		<td>Nom: *</td>
+		<td><input type='text' value='Nom' name="nom"><BR></td>
+		</tr>
+		<tr>
+		<td>Prénom: *</td>
+		<td><input type='text' value='Prénom' name="prenom"><BR></td>
+		</tr>
+		<tr>
+		<td>Adresse Postale:</td>
+		<td><input type='text' value='Adresse' name="adresse"></td>
+		</tr>
+		<tr>
+		<td>Téléphone: *</td>
+		<td><input type='text' value='Téléphone' name="tel"><BR></td>
+		</tr>
+		<tr>
+		<td>Adresse Mail: *</td>
+		<td><input type='text' value='Adresse Mail' name="email"><BR></td>
+		</tr>
+	</table>
+	</div>
+	     <hr>
+		<div>
+	<table>
+		<tr>
+		<td><h3>Formations:</h3></td>
+		<td><textarea rows="8" cols="50" name="formation"> Saisissez les formations sous forme d'un paragraphe</textarea></td>
+		</tr>
+		
+	</table>
+	</div>
+	    <hr>
+		<div id="divTest">
+	<table>
+		<tr>
+		<td><h3>Compétences:</h3></td>
+		<td></td>
+		</tr>
+		<tr>
+		<td>Compétence 1 :</td>
+		<td><input type='text' value='Compétence 1' name="competence_initiale"></td>
+		</tr>
+		<tr>
+		<td></td>
+		<td><input type="button" name="autreComp" value="Ajouter Compétence" onclick="ajouterChamps()"/></td>
+		</tr>
+	</table>
+	</div>
+	<hr>
+	<table>
+		<tr>
+		<td><h3>Langues:</h3></td>
+		<td></td>
+		<td></td>
+		</tr>
+		
+		<tr>
+		<td></td>
+		<td>Francais:</td>
+		<td>
+			Bilingue<input type="radio" name="fr" value="Bilingue" checked>
+			Courant<input type="radio" name="fr" value="Courant">
+			Courant en environnement professionnel<input type="radio" name="fr" value="Courant en environnement professionnel">
+			Intermédiaire<input type="radio" name="fr" value="Intermédiaire">
+			</td>
+		</tr>
+		
+		<tr>
+		<td></td>
+		<td>Anglais:</td>
+		<td>
+			Bilingue<input type="radio" name="ang" value="Bilingue" checked> 
+			Courant<input type="radio" name="ang" value="Courant">
+			Courant en environnement professionnel<input type="radio" name="ang" value="Courant en environnement professionnel">
+			Intermédiaire<input type="radio" name="ang" value="Intermédiaire">
+			</td>
+		</tr>
+		
+		<tr>
+		<td></td>
+		<td>Allemand:</td>
+		<td>
+			Bilingue<input type="radio" name="a1" value="Bilingue" checked>
+			Courant<input type="radio" name="a1" value="Courant">
+			Courant en environnement professionnel<input type="radio" name="a1" value="Courant en environnement professionnel">
+			Intermédiaire<input type="radio" name="a1" value="Intermédiaire">
+			</td>
+		</tr>
+		
+		<tr>
+		<td></td>
+		<td>Espagnol: </td>
+		<td>
+			Bilingue<input type="radio" name="a2" value="Bilingue" checked>
+			Courant<input type="radio" name="a2" value="Courant">
+			Courant en environnement professionnel<input type="radio" name="a2" value="Courant en environnement professionnel">
+			Intermédiaire<input type="radio" name="a2" value="Intermédiaire">
+			</td>
+		</tr>
+	</table>
+    <hr>
+    <table>
+		<tr>
+		<td><h3>Centre d'intérêts:</h3></td>
+		<td></td>
+		<td></td>
+		</tr>
+		
+		<tr>
+		<td></td>
+		<td><input type="checkbox" name="inter" value="Sport" checked>Sport</td>
+		<td><input type="checkbox" name="inter" value="Cinéma"> Cinéma</td>
+		<td><input type="checkbox" name="inter" value="Voyage"> Voyage</td>
+		<td><input type="checkbox" name="inter" value="Voyage"> Lecture</td>
+		</tr>
+		
+		
+	</table>
+    
+
+    
+<br />
+
+</div>
+</FORM>
+
+
+<A HREF='javascript:popup();Verif();'><h1>Afficher mon CV</h1></A>

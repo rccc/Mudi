@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> Sondage </TITLE>
+  <SCRIPT LANGUAGE="JavaScript">
+ var i=0
+ var j=0
+ var x=0
+ var y=0
+function voter(){
+if(document.forms[0].elements[0].checked==true)
+i++;
+if (document.forms[0].elements[1].checked==true)
+j++;
+x=eval((100*i)/(j+i))
+y=eval((100*j)/(j+i))}
+
+
+function afficher(){
+var f=open("","","width=400,height=400") 
+f.document.write("<h1 align='center'>le resultat du sondage</h1>")
+f.document.write("<table border=3 heigth=50% heigth=50%><tr><td>choix</td><td>pourcentage</td><td>nbre de vote</td></tr><tr><td>oui</td><td><img src=pucebleu.gif height=10 width="+x+">"+x+"%</td><td>"+i+"</td></tr><tr><td>non</td><td><img height=10 src=pucerouge.gif width="+y+">"+y+"%</td><td>"+j+"</td>")
+f.document.write('<INPUT TYPE=button NAME="" value=fermer onclick=self.close()>')
+f.document.write('</table>')
+}
+</SCRIPT>
+ 
+ <BODY>
+ <h1 align="center">Question du jour</h1><br><br>
+ <h3>la television est elle devenue une source d'abrutissement ?</h3>
+ <FORM >
+    oui:<INPUT TYPE="radio" NAME="b">
+    non:<INPUT TYPE="radio" NAME="b"><br>
+    <INPUT TYPE="button" value=voter onclick=voter()>
+    <INPUT TYPE="button" value=afficher onclick=afficher()>
+ </FORM>
+ </BODY>
+ </HTML>

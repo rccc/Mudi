@@ -11,7 +11,7 @@ class TagUsageService
 	protected 	$tagList;
 	protected 	$file_path;
 
-	public function __construct($file_path)
+	public function __construct($file_path = '')
 	{
 		$this->file_path = $file_path;
 		$this->result = new \Mudi\Result\TagUsageResult();
@@ -20,8 +20,13 @@ class TagUsageService
 
 	}
 
-	public function getUsage()
+	public function getUsage($file_path = '')
 	{
+		if(!empty($file_path))
+		{
+			$this->file_path = $file_path;
+		}
+
 		$this->parse_file();
 
 		$this->result->stats 			= $this->getStats();

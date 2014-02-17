@@ -91,12 +91,18 @@ class Resource
 				$finder = new Finder();        
 				$finder->files()->in($path)->name($motif);
 
+				if(count($finder)=== 0)
+				{
+					return array();
+				}
+
 				foreach ($finder as $file) {
 					$this->files[$motif][] = $file;
 				}
 
 			}
 		}
+
 		return $this->files[$motif];
 	}
 
