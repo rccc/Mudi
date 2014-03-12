@@ -108,8 +108,12 @@ class Resource
 
 	public function extractArchive()
 	{
+		var_dump('Resource::extractArchive');
+
 		$fs = TemporaryFilesystem::create();
 		$this->archive_path = $fs->createTemporaryDirectory();
+
+		var_dump('archive_path', $this->archive_path);
 
 		$zip = new \ZipArchive();
 		if ($zip->open($this->path) === TRUE) {

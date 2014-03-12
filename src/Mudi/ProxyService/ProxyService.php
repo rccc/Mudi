@@ -24,14 +24,21 @@ class ProxyService
 		{
 			if($this->resource->isArchive)
 			{
-				$fs = TemporaryFilesystem::create();
-				$path = $fs->createTemporaryDirectory();
+				if(empty($this->resource->archive_path))
+				{
+					$fs = TemporaryFilesystem::create();
+					$path = $fs->createTemporaryDirectory();
 
-				$zip = new \ZipArchive();
-				if ($zip->open($this->resource->path) === TRUE) {
-					$zip->extractTo($path);
-					$zip->close();
-				} 
+					$zip = new \ZipArchive();
+					if ($zip->open($this->resource->path) === TRUE) {
+						$zip->extractTo($path);
+						$zip->close();
+					} 
+				}
+				else
+				{
+					$path = $this->resource->archive_path;
+				}
 			}
 			else
 			{
