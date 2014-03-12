@@ -4,7 +4,7 @@ error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 define('DS', DIRECTORY_SEPARATOR);
-define('BASE_PATH', __DIR__);
+define('BASE_PATH', dirname(__DIR__));
 define('MUDI_PATH', BASE_PATH . DS . 'src/Mudi');
 define('RESOURCES_PATH', MUDI_PATH . DS . 'Resources');
 define('VIEW_PATH', RESOURCES_PATH . DS .'views');
@@ -12,7 +12,7 @@ define('TEST_PATH', BASE_PATH . DS . 'tests');
 
 use Silex\Application;
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once BASE_PATH . '/vendor/autoload.php';
 
 $app = new Application;
 $app['debug'] = true;

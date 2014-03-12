@@ -6,6 +6,7 @@ namespace Mudi\Controller;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Mudi\Resource;
 
 class IndexController 
@@ -126,8 +127,15 @@ class IndexController
             $resource->delete_archive();
         }
 
-        //resultats
-        return $app['twig']->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
+        $app['results_content'] = implode(PHP_EOL, $array);
+
+        $subRequest = Request::create('/show-results', 'GET');
+        return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
 
 	}
+
+    public function showResults(Request $request, Application $app)
+    {
+        return $app['twig']->render('index.html.twig', array('content' => $app['results_content']));        
+    }
 }

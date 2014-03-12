@@ -1,5 +1,5 @@
 {
-	"app_request_dev"	: "http://localhost/mudi/",
+	"app_request_dev"	: "http://mudi.localhost",
 	"app_request_prod"	: "http://aleph0.fr/~wtests/Mudi/",
 	"scoring"			: {
 		"html_page"	  		  : 2,
