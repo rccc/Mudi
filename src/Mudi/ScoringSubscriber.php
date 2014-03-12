@@ -46,7 +46,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 	protected function link_checker_scoring($service_name, $resource_name, $results)
 	{
-		//var_dump('link_checker_scoring');
 		$broken = 0;
 		$nb_doc = 0;
 		$value  = 0;
@@ -79,14 +78,12 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		}
 		
-		var_dump('score . ' .$service_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
 
 	}
 
 	protected function w3c_markup_validator_scoring($service_name, $resource_name, $results)
 	{
-		//var_dump('w3c_markup_validator_scoring');
 		$doc_with_error = 0;
 		$nb_doc = 0;
 		$value = 0;
@@ -113,8 +110,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$value = round($value/$nb_doc,1);
 
-		var_dump('score . ' .$service_name, $value);
-
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) contenant des erreurs sur %d document(s)", $doc_with_error, $nb_doc));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
@@ -123,7 +118,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 	protected function tidy_validator_scoring($service_name, $resource_name, $results)
 	{
-		//var_dump("tidy_validator_scoring");
 
 		$nb_doc 	= 0;
 		$invalid 	= 0;
@@ -149,8 +143,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$value = round($value/$nb_doc,1);
 
-		var_dump('score . ' .$service_name, $value);
-
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("%d document(s) non valide(s) sur %d document(s), %d erreur(s) au total", $invalid, $nb_doc, $total_errors));
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf("<b>scoring : %f </b>", $value));
@@ -159,7 +151,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 	protected function tag_usage_scoring($service_name, $resource_name, $results)
 	{
-		//var_dump('tag_usage_scoring');
 
 		$wanted_semantics = array('header', 'footer', 'article', 'section','nav','aside');
 		$wanted_headings  = array('h1', 'h2', 'hgroup');
@@ -174,8 +165,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 		foreach($results as $document_name => $result)
 		{	
 
-			var_dump("result", $result);
-
 			if(empty($result->common_semantics))
 			{
 				$value += $this->config['no_semantics'];
@@ -186,7 +175,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 			{
 				//diff_s retourne les balises sémantiques attendues qui ne sont pas présentes dans le document
 				$diff_s = array_diff($wanted_semantics, $result->common_semantics); 
-				var_dump('diff_', $diff_s);
 				if(!empty($diff_s))
 				{
 					$value += count($diff_s)* $this->config['semantic_not_used'];
@@ -203,7 +191,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 			{
 				//diff_h retourne les balises heading attendues qui ne sont pas présentes dans le document
 				$diff_h = array_diff($wanted_headings, $result->headings); 
-				var_dump('diff_h', $diff_h);
 				if(!empty($diff_h))
 				{
 					//on retire un demi-point pour chaque balise non utilisée
@@ -233,8 +220,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		//on divise par le nombre de document
 		$value = round($value / $nb_doc,1);
-
-		var_dump('score . ' .$service_name, $value);
 
 		$this->decrementScore($resource_name, $value);
 
@@ -274,8 +259,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 		}
 
 		$value = round($value / $nb_doc,1);
-
-		var_dump('score . ' .$service_name, $value);
 
 		$this->decrementScore($resource_name, $value);
 		$this->addScoringMessage($resource_name, $service_name, '', sprintf('%d fichiers css invalides sur %d', $invalid, $nb_doc));
@@ -324,9 +307,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 
 		$value = round($value / $nb_doc,1);
 
-		var_dump('score . ' .$service_name, $value);
-
-
 		$this->decrementScore($resource_name, $value);
 
 		if($css3 === 0)
@@ -353,7 +333,6 @@ class ScoringSubscriber implements EventSubscriberInterface
 		$value -= $css_count * $this->config['css_page'];
 
 		$this->decrementScore($resource->name, $value);
-		var_dump('score count file ', $value);
 
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) HTML", $html_count));
 		$this->addScoringMessage($resource->name, "count_file", "", sprintf("%d fichier(s) CSS", $css_count));

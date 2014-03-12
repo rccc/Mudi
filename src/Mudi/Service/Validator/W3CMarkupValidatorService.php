@@ -42,7 +42,6 @@ class W3CMarkupValidatorService extends BaseValidatorService
 			->setCallback(function(\RollingCurl\Request $request, \RollingCurl\RollingCurl $rollingCurl) use($self) {
 
 				$responseErrors = $request->getResponseError();
-				//var_dump($request->getResponseText());
 				if(empty($responseErrors))
 				{
 

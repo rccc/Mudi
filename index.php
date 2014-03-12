@@ -23,16 +23,14 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.options' => array('autoescape' => false)
     ));
 
-//global layout
-$app->before(function () use ($app) {
-    //$app['twig']->addGlobal('layout', $app['twig']->loadTemplate('index.html.twig'));
-    //$app['twig']->addGlobal('content', $app['twig']->loadTemplate('content.html.twig'));
-});
-
 
 //routes
 $app->get('/', 'Mudi\\Controller\\IndexController::index');   
 $app->post('/check-resource', 'Mudi\\Controller\\IndexController::checkResource');   
+
+//scoring
+$app->register(new Igorw\Silex\ConfigServiceProvider(BASE_PATH  . "/config/mudi.json"));
+$app['dispatcher']->addSubscriber( new \Mudi\ScoringSubscriber($app['scoring']) );
 
 $app->run();
 

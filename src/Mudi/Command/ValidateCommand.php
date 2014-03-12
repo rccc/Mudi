@@ -81,7 +81,6 @@ class ValidateCommand extends BaseValidateCommand
 				$output->writeln('<error>Non valide</error>');
 
 				foreach ($result->messages as $value) {
-						//var_dump($value);
 					$output->writeln(sprintf('<comment>message : %s</comment>', $value['message']));						
 				}
 

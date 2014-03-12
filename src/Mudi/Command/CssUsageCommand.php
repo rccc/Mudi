@@ -60,7 +60,6 @@ class CssUsageCommand extends MudiCommand
 			if($result->media_query_count > 0)
 			{
 				$output->writeln(sprintf('<info>Media queries : %d</info>', $result->media_query_count));
-				var_dump($result->media_queries);
 			}
 			else 
 			{
@@ -77,8 +76,6 @@ class CssUsageCommand extends MudiCommand
 				{
 					$output->writeln(sprintf('<comment>Ce document contient %d propriété(s) CSS3 sans "vendor prefix"</comment>', $result->css3_no_vendor));
 				}
-
-				var_dump($result->css3_rules);
 
 			}
 			else 

@@ -44,8 +44,6 @@ class CssUsageService
 	{
 		foreach($this->cssList as $block)
 		{
-			//var_dump(get_class($block));
-
 			$current_css_rules 		= array(); //on stocke toutes les règles parcourues
 			$current_css3_rules 	= array(); //on stocke uniquement les CSS3 rules
 			$css3_property_list 	= $this->getCSS3PropertyList(); //liste propriétés CSS3

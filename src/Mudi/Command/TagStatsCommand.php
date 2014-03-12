@@ -66,7 +66,6 @@ class tagStatsCommand extends MudiCommand
 			}
 			print implode(PHP_EOL, $tmp) . PHP_EOL;
 
-			var_dump($result);
 		}
 
 		$output->writeln( sprintf('<info>%s DONE</info>', $this->getName()) );

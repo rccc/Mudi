@@ -35,76 +35,99 @@ class IndexController
 		$tmp  = $file->getPathName();
 		$path = $tmp . $file->getClientOriginalName();
 
+        $services = array(
+
+            'Validation_Tidy'            => array(
+                'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
+                'template' => 'tidy.html.twig'),/*
+            'Validation_HTML'           => array(
+                'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
+                'template' => 'validation-w3c.html.twig'),
+            */
+            
+            
+            'Vérification_liens'    => array(
+                'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
+                'template' => 'check_link.html.twig'),  
+            
+        
+            /*
+            'Stats_balises'     => array(
+                'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
+                'template' => 'tag_usage.html.twig'),
+            */
+
+            /*
+            'Validation_CSS'            => array(
+                'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
+                'template' => 'validation-w3c-css.html.twig'),
+            'CSS_Usage' => array(
+                'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
+                'template'     => 'css_usage.html.twig'
+                ),
+            'Screenshot'                => array(
+                'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
+                'template' => 'screenshot.html.twig',
+                )
+            */ 
+            )
+        ;
+
 		//le path contient désormais le nom original avec l'extension.
 		rename($tmp, $path);
 		
 		$resource = new \Mudi\Resource($path);
-		$htmlFiles = $resource->getFiles('html?');
 
-		//on lance la validation
-        /*
-		$validator = new \Mudi\Validator\HtmlServiceValidator();
-
-        foreach($htmlFiles as $file_path => $file) 	    
+        foreach($services as $service_name => $data)
         {
-        	$file_name = pathinfo($file_path)['filename'];
-        	$results[$file_name] = $validator->validate($file);
-        }		
 
-        $response[] = $app['twig']->render('validation-w3c.html.twig', array('results'=> $results));
-        */  
-        //on vérifie les liens
-        $results = array();
-        $resource->errors = array();
-        $linkChecker = new \Mudi\Link\LinkChecker();
-        $res = $resource->getUrls();
+            $options['resource'] = $resource;
 
-        //@todo : revoir la gestion des erreurs @see Mudi\Ressource::getNodeList
-        foreach($res as $file_path => $urls)
+            if($service_name === 'Validation_HTML')
+            {
+                $options['service_url'] = $container['html_validation_url'];
+            }
+            elseif($service_name === 'Validation_CSS')
+            {
+                $options['service_url'] = $container['css_validation_url'];
+            }
+            elseif($service_name === "Screenshot")
+            {
+                $options['output_dir'] = $resource_output;
+            }
+
+            $proxy = new $data['ProxyService']($options);
+            
+            $results  = $proxy->execute();
+
+            $array[] = $app['twig']->render($data['template'], array('results' => $results->all() )); 
+            $app['dispatcher']->dispatch('service.done', new \Mudi\Event($proxy));
+
+        }
+		
+
+        //score
+        $score = \Mudi\Registry::get($resource->name . '_score');
+        $scoring_messages = \Mudi\Registry::get($resource->name . '_scoring_messages');
+
+        \Mudi\Registry::del($resource->name . '_score');
+        \Mudi\Registry::del($resource->name . '_scoring_message');
+
+        $score_tpl = $app['twig']->render('score.html.twig', array(
+            'score' => $score, 
+            'messages' => $scoring_messages,
+            'resource_name' => $resource->name
+            )
+        );
+        array_unshift($array, $score_tpl);
+
+        if($resource->isArchive)
         {
-        	$file_name = pathinfo($file_path)['filename'];
-
-        	if(!empty($urls))
-        	{
-				$results[$file_name] = $linkChecker->check($urls, $documentPath);
-        	}
-        	else
-        	{
-        		$errors[$file_name] = 'Aucun lien trouvé';
-        	}
-        }        	
-       
-
-        $response[] = $app['twig']->render('check_link.html.twig', array('results' => $results, 'errors' => $resource->errors));
-
-        //Usage des balises
-        $results = array();
-        $tagUsage = new \Mudi\TagUsage();
-
-
-        foreach($htmlFiles as $file_path => $file_content)
-        {
-        	$file_name = pathinfo($file_path)['filename'];
-        	$results[$file_name] = $tagUsage->getUsageStats($file_content);
+            $resource->delete_archive();
         }
 
-        $response[] = $app['twig']->render('tag_usage.html.twig', array('results' => $results ));
+        //resultats
+        return $app['twig']->render('index.html.twig', array('content' => implode(PHP_EOL, $array)));
 
-
-        //tidy
-        $results = array();
-        $tidy = new \Mudi\Validator\HtmlTidyValidator();
-
-        $collection = $this->resource->getFilesPath('html?');
-
-        foreach($collection->all() as $fileName => $filePath)
-        {
-            $output_coll = $tidy->validateFile($filePath);
-        }
-        $response[] = $app['twig']->render('tidy.html.twig', array('results' => $output_coll->all() ));
-
-        $content = implode(PHP_EOL, $response);
-       	
-       	return $app['twig']->render('index.html.twig' ,array("content" => $content));
 	}
 }
