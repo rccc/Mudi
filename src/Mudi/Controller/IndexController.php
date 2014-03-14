@@ -40,25 +40,21 @@ class IndexController
 
             'Validation_Tidy'            => array(
                 'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
-                'template' => 'tidy.html.twig'),/*
+                'template' => 'tidy.html.twig'),
             'Validation_HTML'           => array(
                 'ProxyService' => '\Mudi\ProxyService\W3CMarkupValidatorProxyService',
                 'template' => 'validation-w3c.html.twig'),
-            */
+            
             
             
             'Vérification_liens'    => array(
                 'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
                 'template' => 'check_link.html.twig'),  
             
-        
-            /*
             'Stats_balises'     => array(
                 'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
                 'template' => 'tag_usage.html.twig'),
-            */
-
-            /*
+            
             'Validation_CSS'            => array(
                 'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
                 'template' => 'validation-w3c-css.html.twig'),
@@ -70,7 +66,6 @@ class IndexController
                 'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
                 'template' => 'screenshot.html.twig',
                 )
-            */ 
             )
         ;
 
