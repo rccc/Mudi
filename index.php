@@ -31,6 +31,6 @@ $app->get('/show-results', 'Mudi\\Controller\\IndexController::showResults');
 //scoring
 $app->register(new Igorw\Silex\ConfigServiceProvider(BASE_PATH  . "/config/mudi.json"));
 $app['dispatcher']->addSubscriber( new \Mudi\ScoringSubscriber($app['scoring']) );
-
+var_dump($app['app_request_prod']);
 $app->run();
 

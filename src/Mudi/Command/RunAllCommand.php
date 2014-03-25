@@ -74,8 +74,10 @@ class RunAllCommand extends MudiCommand
 
 		;
 
-		$input_dir = $input->getArgument('input_dir');
-		$output_dir = $input->getArgument("output_dir"); 
+		$input_dir = realpath($input->getArgument('input_dir'));
+		$output_dir = realpath($input->getArgument("output_dir")); 
+var_dump($output_dir);
+var_dump(realpath($output_dir));
 
 		if(!is_dir($input_dir) || !is_dir($output_dir))
 		{
@@ -97,20 +99,23 @@ class RunAllCommand extends MudiCommand
 
 		foreach ($finder as $file) {
 
-			$output->writeln('Fichier en cours de traitement : ' . $file->getFileName());
 
+			$output->writeln('Fichier en cours de traitement : ' . $file->getFileName());
+var_dump('get_file_name',$file->getFileName());	
 			$array = array();
+			$file_name = str_replace(' ','_', $file->getFileName());
 			//on récupère juste le nom sans l'extension ( basename )
+
 			//$archive_name = substr($file->getFileName(), 0 , strpos($file->getFileName(), '.'));
 
 			//création nouveau dossier 
-			$resource_output = $output_dir . $file->getFileName();
-			
+			$resource_output = $output_dir . DS . $file_name;
+var_dump('ro',$resource_output);			
 			if(!file_exists($resource_output) && !mkdir($resource_output))
 			{
 				throw new \Exception("Impossible d'écrire dans le dossier de sortie");
 			}
-
+var_dump('pn', $file->getPathName());
 			$resource = new \Mudi\Resource($file->getPathName());
 
 			foreach($services as $service_name => $data)

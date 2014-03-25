@@ -35,7 +35,7 @@ $app->register(new ConsoleServiceProvider(), array(
 
 $app->register(new Igorw\Silex\ConfigServiceProvider(BASE_PATH  . "/config/mudi.json"));
 
-$app["request"] = array('basepath' => $app['app_request_dev']);
+$app["request"] = array('basepath' => $app['app_request_prod']);
 
 $commands = array(
     new \Mudi\Command\ValidateCommand(),
