@@ -13,12 +13,30 @@
 				<div id="tag-usage-{{loop.index}}" class="panel-body collapse">
 								
 					{% if result.common_semantics is empty %}
-						<div><span class="label label-warning">Aucune balise sémantique/structurelle</span></div>
+						<div><span class="label label-warning">Aucune balise sémantique/structurelle</span></div>					
+					{% else %}
+						<div><span class="label label-info">balises sémantiques/structurelles : </span></div>
+						<ul>
+							{% for tagName in result.common_semantics %}
+								<li> {{ tagName }}</li>
+							{%  endfor %}
+						</ul>
+					
 					{% endif %}
 
 					{% if result.headings is empty %}
 						<div><span class="label label-warning">Aucune balise d'en-tête</span></div>
+					{% else %}
+						<div><span class="label  label-info">balises d'en-tête : </span></div>
+						<ul>
+							{% for tagName in result.headings %}
+								<li> {{ tagName }}</li>
+							{%  endfor %}
+						</ul>
+
 					{% endif %}
+
+
 
 					<table class="table table-condensed table-striped">
 						{% for tagName, count in result.stats %}
