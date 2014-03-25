@@ -9,6 +9,7 @@ define('MUDI_PATH', BASE_PATH . DS . 'src/Mudi');
 define('RESOURCES_PATH', MUDI_PATH . DS . 'Resources');
 define('VIEW_PATH', RESOURCES_PATH . DS .'views');
 define('TEST_PATH', BASE_PATH . DS . 'tests');
+define('OUTPUT_DIR',  BASE_PATH . DS . 'output');
 
 use Silex\Application;
 
@@ -22,7 +23,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => array(VIEW_PATH , VIEW_PATH . '/public'),
     'twig.options' => array('autoescape' => false)
     ));
-
 
 //routes
 $app->get('/', 'Mudi\\Controller\\IndexController::index');   

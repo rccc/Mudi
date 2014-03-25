@@ -43,7 +43,7 @@ class RunAllCommand extends MudiCommand
 
 		$services = array(
 
-			'Validation_Tidy'   		 => array(
+			/*'Validation_Tidy'   		 => array(
 				'ProxyService' => '\Mudi\ProxyService\TidyProxyService',
 				'template' => 'tidy.html.twig'),
 			'Validation_HTML'			=> array(
@@ -53,23 +53,25 @@ class RunAllCommand extends MudiCommand
 			'Vérification_liens' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\LinkCheckerProxyService',
 				'template' => 'check_link.html.twig'),	
-			
+			*/
 			'Stats_balises' 	=> array(
 				'ProxyService' => '\Mudi\ProxyService\TagUsageProxyService',
 				'template' => 'tag_usage.html.twig'),
-			
+			/*
 			'Validation_CSS'			=> array(
 				'ProxyService' => '\Mudi\ProxyService\W3CCssValidatorProxyService',
 				'template' => 'validation-w3c-css.html.twig'),
+			*/
 			'CSS_Usage' => array(
 				'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
 				'template'     => 'css_usage.html.twig'
 				),
+			/*
 			'Screenshot'				=> array(
 				'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
 				'template' => 'screenshot.html.twig',
 				)
-			 
+			 */
 			)
 
 		;

@@ -62,10 +62,12 @@ class IndexController
                 'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
                 'template'     => 'css_usage.html.twig'
                 ),
+            /*
             'Screenshot'                => array(
                 'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
                 'template' => 'screenshot.html.twig',
                 )
+            */
             )
         ;
 
@@ -89,7 +91,7 @@ class IndexController
             }
             elseif($service_name === "Screenshot")
             {
-                $options['output_dir'] = $resource_output;
+                $options['output_dir'] = OUTPUT_DIR;
             }
 
             $proxy = new $data['ProxyService']($options);
@@ -103,6 +105,7 @@ class IndexController
 		
 
         //score
+        /*
         $score = \Mudi\Registry::get($resource->name . '_score');
         $scoring_messages = \Mudi\Registry::get($resource->name . '_scoring_messages');
 
@@ -116,7 +119,8 @@ class IndexController
             )
         );
         array_unshift($array, $score_tpl);
-
+        */
+       
         if($resource->isArchive)
         {
             $resource->delete_archive();

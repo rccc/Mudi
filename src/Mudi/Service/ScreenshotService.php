@@ -17,11 +17,13 @@ class ScreenshotService
 
 	public function capture($filename, $output_dir)
 	{
+		
 		$cmd = sprintf("casperjs %s/casperscreen.coffee '%s' %s", RESOURCES_PATH, $filename, $output_dir);
 		
 		$process = new Process($cmd);
 		$process->setTimeout(3600);
 		$process->run();
+		
 		if (!$process->isSuccessful()) {
 		    throw new \RuntimeException($process->getErrorOutput());
 		}
