@@ -62,12 +62,12 @@ class IndexController
                 'ProxyService' => '\Mudi\ProxyService\CssUsageProxyService',
                 'template'     => 'css_usage.html.twig'
                 ),
-            /*
+            
             'Screenshot'                => array(
                 'ProxyService' => '\Mudi\ProxyService\ScreenshotProxyService',
                 'template' => 'screenshot.html.twig',
                 )
-            */
+            
             )
         ;
 

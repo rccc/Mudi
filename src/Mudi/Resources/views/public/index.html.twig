@@ -4,7 +4,6 @@
   <title>Mudi index</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" type="text/css" href="{{app.app_request_prod}}/web//assets/css/bootstrap.min.css" />
-
   <style>
 
   	html {
@@ -40,6 +39,8 @@
 <body>
 	<header>
 		<h1>Mudi</h1>
+		prod {{ app.app_request_prod }}
+		basepath {{ app.request.basepath }}
 	</header>
 	<div class="container">
 		<div class="row">
